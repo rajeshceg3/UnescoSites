@@ -55,6 +55,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalLocation = modalContent.querySelector('.location');
     const closeModalButton = modalContent.querySelector('.close-modal');
 
+    // Array of modal elements to animate
+    const animatedModalElements = [modalSiteName, modalSiteImage, modalLongDesc, modalLocation];
+
     function displaySites(sites) {
         // Clear placeholder content but keep the comment if it exists
         const commentNodes = [];
@@ -66,9 +69,10 @@ document.addEventListener('DOMContentLoaded', () => {
         sitesContainer.innerHTML = ''; // Clear all content
         commentNodes.forEach(comment => sitesContainer.appendChild(comment)); // Add comments back
 
-        sites.forEach(site => {
+        sites.forEach((site, index) => { // Added index parameter
             const siteCard = document.createElement('article');
             siteCard.classList.add('site-card');
+            // Note: Initial opacity:0 and transform:translateY(20px) are set in CSS
             siteCard.innerHTML = `
                 <img src="${site.image_url}" alt="${site.name}">
                 <h2>${site.name}</h2>
@@ -76,6 +80,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 <button class="learn-more" data-id="${site.id}">Learn More</button>
             `;
             sitesContainer.appendChild(siteCard);
+
+            // Staggered appearance
+            setTimeout(() => {
+                siteCard.classList.add('card-visible');
+            }, index * 100); // 100ms delay per card
         });
     }
 
@@ -101,11 +110,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
         modalLocation.textContent = `Coordinates: ${site.coordinates}`;
 
-        siteDetailModal.classList.remove('hidden');
+        // Prepare elements for animation
+        animatedModalElements.forEach(el => {
+            el.classList.add('modal-element-animate');
+            el.classList.remove('modal-element-visible'); // Ensure it's hidden before animation
+        });
+
+        siteDetailModal.classList.remove('hidden'); // This triggers modal container transition (opacity for overlay)
+
+        // After a short delay for the modal container to become visible, trigger element animations
+        // Stagger the animation for a nicer effect
+        animatedModalElements.forEach((el, index) => {
+            setTimeout(() => {
+                el.classList.add('modal-element-visible');
+            }, 100 + index * 50); // Start after 100ms, then stagger by 50ms
+        });
     }
 
     function closeModal() {
         siteDetailModal.classList.add('hidden');
+
+        // Reset elements for next time modal opens
+        animatedModalElements.forEach(el => {
+            el.classList.remove('modal-element-animate', 'modal-element-visible');
+        });
     }
 
     // Event Listeners
@@ -145,4 +173,20 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
         sitesContainer.innerHTML = "<p>No heritage site data to display.</p>"; // Fallback message
     }
+
+    // Page load animations for sections
+    const sectionsToAnimate = [
+        document.getElementById('introduction'),
+        document.getElementById('sites-container'),
+        document.querySelector('footer')
+    ];
+
+    sectionsToAnimate.forEach((section, index) => {
+        if (section) {
+            section.classList.add('fade-in-section');
+            setTimeout(() => {
+                section.classList.add('is-visible');
+            }, index * 150); // 150ms stagger
+        }
+    });
 });
