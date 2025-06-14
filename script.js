@@ -49,11 +49,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const sitesContainer = document.getElementById('sites-container');
     const siteDetailModal = document.getElementById('site-detail-modal');
     const modalContent = siteDetailModal.querySelector('.modal-content'); // For event delegation on modal
-    const modalSiteName = siteDetailModal.querySelector('h2');
-    const modalSiteImage = siteDetailModal.querySelector('img');
-    const modalLongDesc = siteDetailModal.querySelector('.long-desc');
-    const modalLocation = siteDetailModal.querySelector('.location');
-    const closeModalButton = siteDetailModal.querySelector('.close-modal');
+    const modalSiteName = modalContent.querySelector('h2');
+    const modalSiteImage = modalContent.querySelector('img');
+    const modalLongDesc = modalContent.querySelector('.long-desc');
+    const modalLocation = modalContent.querySelector('.location');
+    const closeModalButton = modalContent.querySelector('.close-modal');
 
     function displaySites(sites) {
         // Clear placeholder content but keep the comment if it exists
