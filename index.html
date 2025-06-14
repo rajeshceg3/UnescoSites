@@ -12,8 +12,7 @@
     </header>
     <nav>
         <ul>
-            <li><a href="#">Home</a></li>
-            <li><a href="#">About</a></li>
+            <!-- Navigation links removed by Jules -->
         </ul>
     </nav>
     <main>
@@ -22,20 +21,18 @@
         </section>
         <section id="sites-container">
             <!-- Heritage sites will be dynamically loaded here by script.js -->
-            <article class="site-card">
-                <img src="placeholder.jpg" alt="Placeholder Image">
-                <h2>Site Name</h2>
-                <p class="short-desc">A brief description of the heritage site.</p>
-                <button class="learn-more">Learn More</button>
-            </article>
+            <!-- Original placeholder card removed by Jules -->
+            <p id="loading-message">Loading sites...</p>
         </section>
-        <section id="site-detail-modal" class="hidden">
+        <section id="site-detail-modal" class="hidden" role="dialog" aria-modal="true" aria-labelledby="modalSiteName">
             <!-- Detailed information popup -->
-            <h2>Site Name Detail</h2>
-            <img src="placeholder-detail.jpg" alt="Site Image Detail">
-            <p class="long-desc">More detailed information about the site, its history, and significance will be displayed here.</p>
-            <p class="location">Location/Coordinates: To be filled</p>
-            <button class="close-modal">Close</button>
+            <div class="modal-content">
+                <h2 id="modalSiteName">Site Name Detail</h2>
+                <img src="placeholder-detail.jpg" alt="Site Image Detail">
+                <p class="long-desc">More detailed information about the site, its history, and significance will be displayed here.</p>
+                <p class="location">Location/Coordinates: To be filled</p>
+                <button class="close-modal">Close</button>
+            </div>
         </section>
     </main>
     <footer>
