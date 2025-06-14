@@ -1,3 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Montserrat:wght@400;700&display=swap');
+
+html {
+    scroll-behavior: smooth; /* Added smooth scrolling */
+}
+
 /* General Styling */
 * {
     box-sizing: border-box;
@@ -6,14 +12,16 @@
 }
 
 body {
-    font-family: 'Arial', sans-serif;
-    background-color: #fdf5e6; /* Light, warm off-white */
-    color: #333; /* Main text color */
+    font-family: 'Merriweather', serif; /* Updated font */
+    background-color: #f9f5f0; /* Warmer off-white */
+    background-image: linear-gradient(to bottom right, #f9f5f0, #f3ede7); /* Subtle gradient */
+    color: #4a4a4a; /* Darker gray for readability */
     line-height: 1.6;
 }
 
 h1, h2, h3, h4, h5, h6 {
-    color: #005a8d; /* Deep blue for headings */
+    font-family: 'Montserrat', sans-serif; /* Updated font */
+    color: #004d40; /* Deeper teal/blue for headings */
     margin-bottom: 0.5em;
 }
 
@@ -26,12 +34,12 @@ h2 {
 }
 
 p {
-    margin-bottom: 1em;
+    margin-bottom: 1.2em; /* Increased margin-bottom */
     font-size: 1em;
 }
 
 a {
-    color: #ff8c00; /* Warm orange for links */
+    color: #d77a00; /* Richer, slightly desaturated orange */
     text-decoration: none;
     transition: color 0.3s ease;
 }
@@ -48,7 +56,7 @@ img {
 
 /* Header */
 header {
-    background-color: #005a8d; /* Deep blue */
+    background-color: #004d40; /* Matching new heading color */
     color: #fff;
     padding: 1.5em 1em;
     text-align: center;
@@ -61,39 +69,49 @@ header h1 {
 
 /* Navigation */
 nav {
-    background-color: #004c7a; /* Slightly darker blue */
-    padding: 0.5em 0;
+    background-color: #00382e; /* Darker shade of the header */
+    padding: 0.75em 0; /* Adjusted padding for taller links */
 }
 
 nav ul {
     list-style-type: none;
     text-align: center;
+    padding: 0; /* Ensure no default padding interferes */
 }
 
 nav ul li {
-    display: inline;
-    margin-right: 25px;
+    display: inline-block; /* Changed to inline-block for better spacing control */
+    margin: 0 5px; /* Adjusted margin for closer links */
 }
 
 nav ul li:last-child {
-    margin-right: 0;
+    margin-right: 0; /* Keep last item margin if needed, or remove if centered */
 }
 
 nav ul li a {
-    color: #fff;
-    padding: 0.5em 1em;
+    color: #f0f0f0; /* Light color for good contrast */
+    padding: 0.75em 1.5em; /* Increased padding */
     border-radius: 4px;
-    transition: background-color 0.3s ease;
+    text-decoration: none;
+    transition: background-color 0.3s ease, color 0.3s ease; /* Added color transition */
+    display: inline-block; /* Ensure padding is respected */
 }
 
 nav ul li a:hover {
-    background-color: #ff8c00; /* Warm orange accent on hover */
+    background-color: #005c4e; /* Lighter shade of nav background */
+    color: #ffffff; /* White text on hover */
     text-decoration: none;
+}
+
+nav ul li a.active {
+    background-color: #d77a00; /* Primary orange accent */
+    color: #ffffff; /* White text for active link */
+    font-weight: bold;
 }
 
 /* Main Content */
 main {
-    padding: 20px;
+    padding: 30px; /* Increased padding */
     max-width: 1200px;
     margin: 20px auto; /* Center main content */
 }
@@ -116,7 +134,7 @@ main {
 #sites-container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Responsive grid */
-    gap: 25px;
+    gap: 30px; /* Increased gap */
 }
 
 /* Site Card */
@@ -124,16 +142,24 @@ main {
     background-color: #fff;
     border: 1px solid #ddd;
     border-radius: 8px;
-    padding: 20px;
+    padding: 25px; /* Increased padding */
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     display: flex;
     flex-direction: column;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    opacity: 0; /* Initial state for staggered load */
+    transform: translateY(20px); /* Initial state for staggered load */
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out, box-shadow 0.3s ease, border-color 0.3s ease; /* Added border-color transition */
+}
+
+.site-card.card-visible {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 .site-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2); /* Enhanced shadow */
+    border-color: #d77a00; /* Accent color border highlight */
 }
 
 .site-card img {
@@ -171,13 +197,13 @@ button:hover, .button:hover {
 }
 
 .learn-more {
-    background-color: #ff8c00; /* Warm orange */
+    background-color: #d77a00; /* Matching new link color */
     color: #fff;
     align-self: flex-start; /* Align button to the start of the card footer */
 }
 
 .learn-more:hover {
-    background-color: #e67e00; /* Darker orange */
+    background-color: #b86a00; /* Darker shade of the button */
 }
 
 /* Modal (#site-detail-modal) */
@@ -212,7 +238,7 @@ button:hover, .button:hover {
 
 .modal-content {
     background-color: #fff;
-    padding: 30px;
+    padding: 35px; /* Adjusted modal padding */
     border-radius: 8px;
     box-shadow: 0 5px 15px rgba(0,0,0,0.3);
     max-width: 700px;
@@ -220,12 +246,14 @@ button:hover, .button:hover {
     max-height: 90vh; /* Max height relative to viewport height */
     overflow-y: auto; /* Scroll for content exceeding max-height */
     position: relative; /* For positioning close button */
-    transform: scale(0.95); /* Slight scale for entry animation */
-    transition: transform 0.3s ease;
+    opacity: 0; /* Base state for animation */
+    transform: translateY(-20px) scale(0.95); /* Base state for animation: slide down and slightly scaled */
+    transition: opacity 0.3s ease, transform 0.3s ease; /* Smooth transition for opacity and transform */
 }
 
 #site-detail-modal:not(.hidden) .modal-content {
-    transform: scale(1);
+    opacity: 1; /* Visible state */
+    transform: translateY(0) scale(1); /* Visible state: normal position and scale */
 }
 
 
@@ -238,10 +266,22 @@ button:hover, .button:hover {
     margin-bottom: 20px;
 }
 
+/* Animation classes for modal elements */
+.modal-element-animate {
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+}
+
+.modal-element-animate.modal-element-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
 .modal-content h2 {
     margin-top: 0;
     font-size: 2em;
-    color: #005a8d;
+    color: #004d40; /* Matching new heading color */
 }
 
 .modal-content .long-desc {
@@ -272,8 +312,8 @@ button:hover, .button:hover {
 
 /* Footer */
 footer {
-    background-color: #333;
-    color: #fdf5e6; /* Light text on dark background */
+    background-color: #333; /* Keeping footer background dark */
+    color: #f9f5f0; /* Adjusted text color to match new body background for contrast */
     text-align: center;
     padding: 1.5em 1em;
     font-size: 0.9em;
@@ -355,4 +395,16 @@ footer {
     opacity: 0 !important;
     visibility: hidden !important;
     pointer-events: none; /* Prevent interaction when hidden */
+}
+
+/* Page Section Fade-in Animation */
+.fade-in-section {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.fade-in-section.is-visible {
+    opacity: 1;
+    transform: translateY(0);
 }
