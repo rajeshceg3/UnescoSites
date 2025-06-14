@@ -1,0 +1,358 @@
+/* General Styling */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #fdf5e6; /* Light, warm off-white */
+    color: #333; /* Main text color */
+    line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: #005a8d; /* Deep blue for headings */
+    margin-bottom: 0.5em;
+}
+
+h1 {
+    font-size: 2.5em;
+}
+
+h2 {
+    font-size: 1.8em;
+}
+
+p {
+    margin-bottom: 1em;
+    font-size: 1em;
+}
+
+a {
+    color: #ff8c00; /* Warm orange for links */
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Header */
+header {
+    background-color: #005a8d; /* Deep blue */
+    color: #fff;
+    padding: 1.5em 1em;
+    text-align: center;
+}
+
+header h1 {
+    color: #fff;
+    margin-bottom: 0;
+}
+
+/* Navigation */
+nav {
+    background-color: #004c7a; /* Slightly darker blue */
+    padding: 0.5em 0;
+}
+
+nav ul {
+    list-style-type: none;
+    text-align: center;
+}
+
+nav ul li {
+    display: inline;
+    margin-right: 25px;
+}
+
+nav ul li:last-child {
+    margin-right: 0;
+}
+
+nav ul li a {
+    color: #fff;
+    padding: 0.5em 1em;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+nav ul li a:hover {
+    background-color: #ff8c00; /* Warm orange accent on hover */
+    text-decoration: none;
+}
+
+/* Main Content */
+main {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 20px auto; /* Center main content */
+}
+
+/* Introduction Section */
+#introduction {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+#introduction p {
+    font-size: 1.1em;
+    color: #555;
+}
+
+/* Sites Container */
+#sites-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Responsive grid */
+    gap: 25px;
+}
+
+/* Site Card */
+.site-card {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.site-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+.site-card img {
+    border-radius: 4px;
+    margin-bottom: 15px;
+    aspect-ratio: 16 / 9; /* Maintain aspect ratio for images */
+    object-fit: cover; /* Ensure images cover the area well */
+}
+
+.site-card h2 {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+}
+
+.site-card .short-desc {
+    font-size: 0.95em;
+    color: #666;
+    flex-grow: 1; /* Allows description to take available space */
+    margin-bottom: 15px;
+}
+
+/* Buttons (general styling, can be overridden) */
+button, .button {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    text-align: center;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+button:hover, .button:hover {
+    transform: translateY(-2px);
+}
+
+.learn-more {
+    background-color: #ff8c00; /* Warm orange */
+    color: #fff;
+    align-self: flex-start; /* Align button to the start of the card footer */
+}
+
+.learn-more:hover {
+    background-color: #e67e00; /* Darker orange */
+}
+
+/* Modal (#site-detail-modal) */
+#site-detail-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent overlay */
+    display: flex; /* Use flexbox to center content */
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px; /* Padding for smaller screens so modal doesn't touch edges */
+    opacity: 0; /* Start hidden for transition */
+    visibility: hidden; /* Start hidden for transition */
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+#site-detail-modal.hidden {
+    display: flex; /* Keep flex for centering, just control visibility with opacity/visibility */
+    opacity: 0;
+    visibility: hidden;
+}
+
+/* Styles for when modal is shown (JS will remove .hidden, not add a new class) */
+#site-detail-modal:not(.hidden) {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-content {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    max-width: 700px;
+    width: 100%; /* Responsive width */
+    max-height: 90vh; /* Max height relative to viewport height */
+    overflow-y: auto; /* Scroll for content exceeding max-height */
+    position: relative; /* For positioning close button */
+    transform: scale(0.95); /* Slight scale for entry animation */
+    transition: transform 0.3s ease;
+}
+
+#site-detail-modal:not(.hidden) .modal-content {
+    transform: scale(1);
+}
+
+
+.modal-content img {
+    width: 100%;
+    height: auto;
+    max-height: 400px; /* Limit image height inside modal */
+    object-fit: cover;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+.modal-content h2 {
+    margin-top: 0;
+    font-size: 2em;
+    color: #005a8d;
+}
+
+.modal-content .long-desc {
+    font-size: 1.05em;
+    margin-bottom: 15px;
+}
+
+.modal-content .location {
+    font-size: 0.9em;
+    color: #555;
+    font-style: italic;
+    margin-bottom: 20px;
+}
+
+.close-modal {
+    background-color: #e2725b; /* Muted terracotta */
+    color: white;
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    padding: 8px 12px;
+    font-size: 0.9em;
+}
+
+.close-modal:hover {
+    background-color: #c7604c;
+}
+
+/* Footer */
+footer {
+    background-color: #333;
+    color: #fdf5e6; /* Light text on dark background */
+    text-align: center;
+    padding: 1.5em 1em;
+    font-size: 0.9em;
+    margin-top: 30px; /* Give some space above the footer */
+    /* position: fixed and bottom:0 removed to allow natural flow */
+}
+
+/* Basic Responsiveness */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 2em;
+    }
+
+    h2 {
+        font-size: 1.6em;
+    }
+
+    nav ul li {
+        display: block; /* Stack nav items */
+        margin: 0 auto 10px; /* Center them and add some margin */
+    }
+    nav ul li a {
+        display: block; /* Make the whole area clickable */
+    }
+
+    #sites-container {
+        grid-template-columns: 1fr; /* Single column for site cards */
+        gap: 20px;
+    }
+
+    .site-card {
+        width: auto; /* Full width within the container's padding */
+    }
+
+    .modal-content {
+        padding: 20px;
+        max-height: 85vh;
+    }
+
+    .modal-content h2 {
+        font-size: 1.5em;
+    }
+
+    .close-modal {
+        top: 10px;
+        right: 10px;
+        padding: 6px 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        font-size: 15px; /* Slightly smaller base font for very small devices */
+    }
+    header {
+        padding: 1em 0.5em;
+    }
+    header h1 {
+        font-size: 1.8em;
+    }
+    main {
+        padding: 15px;
+    }
+    .site-card {
+        padding: 15px;
+    }
+    .learn-more, .close-modal {
+        padding: 8px 12px;
+        font-size: 0.95em;
+    }
+    .modal-content {
+        padding: 15px;
+    }
+}
+
+/* Ensure .hidden class always overrides display for modal */
+.hidden {
+    display: flex !important; /* Use flex to keep centering logic consistent, but control with opacity/visibility */
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none; /* Prevent interaction when hidden */
+}
