@@ -54,6 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalLongDesc = modalContent.querySelector('.long-desc');
     const modalLocation = modalContent.querySelector('.location');
     const closeModalButton = modalContent.querySelector('.close-modal');
+    const searchInput = document.getElementById('search-input');
 
     // Array of modal elements to animate
     const animatedModalElements = [modalSiteName, modalSiteImage, modalLongDesc, modalLocation];
@@ -68,6 +69,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         sitesContainer.innerHTML = ''; // Clear all content
         commentNodes.forEach(comment => sitesContainer.appendChild(comment)); // Add comments back
+
+        if (sites.length === 0) {
+            sitesContainer.innerHTML = '<p id="no-results-message">No matching sites found.</p>';
+            return;
+        }
 
         sites.forEach((site, index) => { // Added index parameter
             const siteCard = document.createElement('article');
@@ -163,6 +169,24 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     } else {
         console.error("#site-detail-modal not found.");
+    }
+
+    // Event Listener for search input
+    if (searchInput) {
+        searchInput.addEventListener('input', () => {
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            if (searchTerm === '') {
+                displaySites(heritageSitesData);
+            } else {
+                const filteredSites = heritageSitesData.filter(site => {
+                    return site.name.toLowerCase().includes(searchTerm) ||
+                           site.short_description.toLowerCase().includes(searchTerm);
+                });
+                displaySites(filteredSites);
+            }
+        });
+    } else {
+        console.error("#search-input not found.");
     }
 
     // Initial display of sites
