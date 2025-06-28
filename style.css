@@ -156,6 +156,24 @@ main {
     transform: translateY(0);
 }
 
+.image-error {
+    border: 2px dashed #cc0000; /* Red dashed border */
+    background-color: #f0f0f0; /* Light gray background */
+    color: #cc0000; /* Red text color */
+    text-align: center;
+    display: flex; /* To center text if using pseudo-elements or alt text */
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9em;
+    /* Ensure it still occupies space */
+    min-height: 100px; /* Or a more appropriate fallback height */
+    aspect-ratio: 16 / 9; /* Maintain aspect ratio if possible */
+}
+
+.image-error::after {
+    content: 'Image not available'; /* Display text */
+}
+
 /* Search Input Styling */
 #search-section {
     margin-bottom: 25px;

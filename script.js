@@ -85,7 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
             siteCard.classList.add('site-card');
             // Note: Initial opacity:0 and transform:translateY(20px) are set in CSS
             siteCard.innerHTML = `
-                <img data-src="${site.image_url}" alt="${site.name}" class="lazy-load">
+                <img data-src="${site.image_url}" alt="${site.name}" class="lazy-load" onerror="this.classList.add('image-error'); this.alt='Image for ${site.name} is not available'; this.removeAttribute('data-src');">
                 <h2>${site.name}</h2>
                 <p class="short-desc">${site.short_description}</p>
                 <button class="learn-more" data-id="${site.id}">Learn More</button>
@@ -123,6 +123,12 @@ document.addEventListener('DOMContentLoaded', () => {
             // Fallback for older browsers: load all images immediately
             console.log("IntersectionObserver not supported, loading images directly.");
             lazyImages.forEach(img => {
+                img.onerror = function() {
+                    this.classList.add('image-error');
+                    this.alt = 'Image for ' + this.alt + ' is not available'; // Keep original alt and append
+                    // Potentially remove data-src if it was the source of error
+                    if (this.dataset.src) this.removeAttribute('data-src');
+                };
                 img.src = img.dataset.src;
                 img.classList.remove('lazy-load');
                 img.classList.add('image-loaded');
@@ -175,8 +181,31 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         modalSiteName.textContent = site.name;
+
+        // Clear previous error states
+        modalSiteImage.classList.remove('image-error');
+        modalSiteImage.alt = site.name; // Set base alt text
+
+        // Remove previous error handler if one was attached
+        if (modalSiteImage._currentOnError) {
+            modalSiteImage.removeEventListener('error', modalSiteImage._currentOnError);
+        }
+
+        // Define the new error handler
+        modalSiteImage._currentOnError = function() {
+            this.classList.add('image-error');
+            // The alt text is already site.name, we can append to it or set as planned in CSS
+            // For simplicity with the CSS ::after rule, just adding class might be enough
+            // If more specific text is needed here and CSS ::after is not used:
+            // this.alt = 'Image for ' + site.name + ' is not available';
+
+            // Prevent repeated attempts if src is somehow retried by browser
+            // this.src = ""; // Or a placeholder image
+        };
+        modalSiteImage.addEventListener('error', modalSiteImage._currentOnError);
+
+        // Then, set the src:
         modalSiteImage.src = site.image_url;
-        modalSiteImage.alt = site.name;
         modalSiteImage.setAttribute('tabindex', '0'); // Make image focusable
 
         let fullDescription = site.long_description;
