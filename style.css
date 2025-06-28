@@ -159,6 +159,7 @@ main {
 /* Search Input Styling */
 #search-section {
     margin-bottom: 25px;
+    position: relative; /* To position the clear button absolutely within this section */
 }
 
 #search-input {
@@ -169,12 +170,35 @@ main {
     border-radius: 5px;
     box-shadow: inset 0 1px 3px rgba(0,0,0,0.06);
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    padding-right: 35px; /* Make space for the button */
 }
 
 #search-input:focus {
     border-color: #d77a00;
     box-shadow: 0 0 5px rgba(215, 122, 0, 0.5), inset 0 1px 3px rgba(0,0,0,0.06);
     outline: none;
+}
+
+#clear-search-btn {
+    position: absolute;
+    top: 50%;
+    right: 10px; /* Adjust as needed */
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    font-size: 1.3em; /* Adjust as needed, using em for scalability */
+    cursor: pointer;
+    color: #777;
+    padding: 5px; /* Add some padding for easier clicking */
+    line-height: 1; /* Ensure icon is centered if it's text-based */
+}
+
+#clear-search-btn:hover {
+    color: #333;
+}
+
+#clear-search-btn.hidden {
+    display: none;
 }
 
 /* No Results Message Styling */
@@ -191,11 +215,32 @@ main {
     border-color: #d77a00; /* Accent color border highlight */
 }
 
+.site-card:focus-within {
+    transform: translateY(-5px); /* Same as hover */
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2); /* Same as hover */
+    border-color: #005c4e; /* Use a distinct color for focus, e.g., the theme's darker teal/blue */
+    outline: 1px solid #005c4e; /* Optional: an additional subtle outline on the card itself */
+}
+
 .site-card img {
     border-radius: 4px;
     margin-bottom: 15px;
     aspect-ratio: 16 / 9; /* Maintain aspect ratio for images */
     object-fit: cover; /* Ensure images cover the area well */
+}
+
+.site-card img.lazy-load {
+    background-color: #e0e0e0; /* Light gray placeholder background */
+    /* Consider adding a min-height or ensuring aspect-ratio is maintained if src is initially empty */
+}
+
+.site-card img.image-loaded {
+    animation: fadeInImage 0.5s ease-in-out;
+}
+
+@keyframes fadeInImage {
+    from { opacity: 0.5; } /* Start from slightly transparent if coming from a background color */
+    to { opacity: 1; }
 }
 
 .site-card h2 {
@@ -233,6 +278,12 @@ button:hover, .button:hover {
 
 .learn-more:hover {
     background-color: #b86a00; /* Darker shade of the button */
+}
+
+.learn-more:focus {
+    outline: 2px solid #005c4e; /* Example: Using a theme color for outline */
+    outline-offset: 2px; /* To ensure the outline is outside the button */
+    background-color: #b86a00; /* Consistent with hover, or choose a specific focus color */
 }
 
 /* Modal (#site-detail-modal) */
@@ -424,7 +475,14 @@ footer {
     opacity: 0 !important;
     visibility: hidden !important;
     pointer-events: none; /* Prevent interaction when hidden */
+    /* The display: flex !important was specific to the modal, general .hidden should be display: none */
 }
+
+/* General hidden class, if not already present or needs override for other elements */
+.hidden {
+    display: none !important;
+}
+
 
 /* Page Section Fade-in Animation */
 .fade-in-section {
