@@ -1,6 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("JavaScript file loaded and DOM fully parsed.");
-
     const heritageSitesData = [
         {
             id: 1,
@@ -85,7 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
             siteCard.classList.add('site-card');
             // Note: Initial opacity:0 and transform:translateY(20px) are set in CSS
             siteCard.innerHTML = `
-                <img data-src="${site.image_url}" alt="${site.name}" class="lazy-load" onerror="this.classList.add('image-error'); this.alt='Image for ${site.name} is not available'; this.removeAttribute('data-src');">
+                <img data-src="${site.image_url}" alt="${site.name}" class="lazy-load">
                 <h2>${site.name}</h2>
                 <p class="short-desc">${site.short_description}</p>
                 <button class="learn-more" data-id="${site.id}">Learn More</button>
@@ -108,10 +106,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
                         const img = entry.target;
+                        img.onload = function() {
+                            this.classList.add('image-loaded');
+                        };
+                        img.onerror = function() {
+                            this.classList.add('image-error');
+                            // 'this.alt' initially holds site.name
+                            this.alt = 'Failed to load image for ' + this.alt + '.';
+                            if (this.dataset.src) this.removeAttribute('data-src'); // Clean up data-src
+                        };
                         img.src = img.dataset.src;
-                        img.classList.remove('lazy-load');
-                        img.classList.add('image-loaded');
-                        observer.unobserve(img);
+                        img.classList.remove('lazy-load'); // Removed once processing starts
+                        observer.unobserve(img); // Unobserve after setting src
                     }
                 });
             }, { rootMargin: '0px 0px 50px 0px' }); // Start loading 50px before they enter viewport
@@ -121,17 +127,18 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         } else {
             // Fallback for older browsers: load all images immediately
-            console.log("IntersectionObserver not supported, loading images directly.");
             lazyImages.forEach(img => {
+                img.onload = function() {
+                    this.classList.add('image-loaded');
+                };
                 img.onerror = function() {
                     this.classList.add('image-error');
-                    this.alt = 'Image for ' + this.alt + ' is not available'; // Keep original alt and append
-                    // Potentially remove data-src if it was the source of error
-                    if (this.dataset.src) this.removeAttribute('data-src');
+                    // 'this.alt' initially holds site.name
+                    this.alt = 'Failed to load image for ' + this.alt + '.';
+                    if (this.dataset.src) this.removeAttribute('data-src'); // Clean up data-src
                 };
                 img.src = img.dataset.src;
                 img.classList.remove('lazy-load');
-                img.classList.add('image-loaded');
             });
         }
     }
@@ -141,7 +148,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (event.key !== 'Tab') return;
 
         const focusableModalElements = Array.from(modalContent.querySelectorAll(
-            'h2, img[tabindex="0"], p[tabindex="0"], button.close-modal'
+            'button.close-modal' // Only inherently interactive elements like buttons
         )).filter(el => el.offsetParent !== null); // Filter for visible elements
 
         if (focusableModalElements.length === 0) return;
@@ -176,7 +183,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const site = heritageSitesData.find(s => s.id === parseInt(siteId));
         if (!site) {
-            console.error("Site not found for ID:", siteId);
             return;
         }
 
@@ -194,19 +200,13 @@ document.addEventListener('DOMContentLoaded', () => {
         // Define the new error handler
         modalSiteImage._currentOnError = function() {
             this.classList.add('image-error');
-            // The alt text is already site.name, we can append to it or set as planned in CSS
-            // For simplicity with the CSS ::after rule, just adding class might be enough
-            // If more specific text is needed here and CSS ::after is not used:
-            // this.alt = 'Image for ' + site.name + ' is not available';
-
-            // Prevent repeated attempts if src is somehow retried by browser
-            // this.src = ""; // Or a placeholder image
+            // 'site' variable should be accessible in this scope from openModal
+            this.alt = 'Image for ' + site.name + ' is not available. Please check the URL or try again later.';
         };
         modalSiteImage.addEventListener('error', modalSiteImage._currentOnError);
 
         // Then, set the src:
         modalSiteImage.src = site.image_url;
-        modalSiteImage.setAttribute('tabindex', '0'); // Make image focusable
 
         let fullDescription = site.long_description;
         if (site.specific_sites && site.specific_sites.length > 0) {
@@ -216,10 +216,8 @@ document.addEventListener('DOMContentLoaded', () => {
             fullDescription += `<br><br><strong>Key Structures:</strong><ul>${site.key_structures.map(ks => `<li>${ks}</li>`).join('')}</ul>`;
         }
         modalLongDesc.innerHTML = fullDescription; // Use innerHTML for lists
-        modalLongDesc.setAttribute('tabindex', '0'); // Make long description focusable
 
         modalLocation.textContent = `Coordinates: ${site.coordinates}`;
-        modalLocation.setAttribute('tabindex', '0'); // Make location focusable
 
         // Prepare elements for animation
         animatedModalElements.forEach(el => {
@@ -266,9 +264,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // Remove tabindex from elements that were made focusable
-        modalSiteImage.removeAttribute('tabindex');
-        modalLongDesc.removeAttribute('tabindex');
-        modalLocation.removeAttribute('tabindex');
 
         // Restore focus to the element that opened the modal
         if (lastFocusedElement) {
@@ -284,14 +279,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 openModal(siteId);
             }
         });
-    } else {
-        console.error("#sites-container not found.");
     }
 
     if (closeModalButton) {
         closeModalButton.addEventListener('click', closeModal);
-    } else {
-        console.error(".close-modal button not found.");
     }
 
     if (siteDetailModal) {
@@ -301,8 +292,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 closeModal();
             }
         });
-    } else {
-        console.error("#site-detail-modal not found.");
     }
 
     // Event Listener for search input
@@ -336,8 +325,6 @@ document.addEventListener('DOMContentLoaded', () => {
             clearSearchButton.classList.add('hidden');
         }
 
-    } else {
-        console.error("#search-input not found.");
     }
 
     // Event Listener for clear search button
@@ -348,15 +335,14 @@ document.addEventListener('DOMContentLoaded', () => {
             clearSearchButton.classList.add('hidden'); // Hide the button
             searchInput.focus(); // Set focus back to the search input
         });
-    } else {
-        console.error("#clear-search-btn not found.");
     }
 
     // Initial display of sites
     if (heritageSitesData.length > 0 && sitesContainer) {
         displaySites(heritageSitesData);
     } else if (!sitesContainer) {
-        console.error("Cannot display sites because #sites-container is missing.")
+        // If sitesContainer itself is missing, there's nowhere to put the message.
+        // This case implies a fundamental HTML structure issue.
     } else {
         sitesContainer.innerHTML = "<p>No heritage site data to display.</p>"; // Fallback message
     }
