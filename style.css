@@ -380,6 +380,7 @@ button:hover, .button:hover {
     margin-top: 0;
     font-size: 2em;
     color: #004d40; /* Matching new heading color */
+    padding-right: 50px; /* Prevents overlap with the close button */
 }
 
 .modal-content .long-desc {
@@ -485,15 +486,6 @@ footer {
     .modal-content {
         padding: 15px;
     }
-}
-
-/* Ensure .hidden class always overrides display for modal */
-.hidden {
-    display: flex !important; /* Use flex to keep centering logic consistent, but control with opacity/visibility */
-    opacity: 0 !important;
-    visibility: hidden !important;
-    pointer-events: none; /* Prevent interaction when hidden */
-    /* The display: flex !important was specific to the modal, general .hidden should be display: none */
 }
 
 /* General hidden class, if not already present or needs override for other elements */
