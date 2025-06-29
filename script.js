@@ -54,15 +54,37 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeModalButton = modalContent.querySelector('.close-modal');
     const searchInput = document.getElementById('search-input');
     const clearSearchButton = document.getElementById('clear-search-btn');
+    const navLinks = document.querySelectorAll('nav ul li a');
+    const introductionSection = document.getElementById('introduction');
+    const searchSection = document.getElementById('search-section');
+    // const sitesContainer = document.getElementById('sites-container'); // Should be already defined
+    const mapViewSection = document.getElementById('map-view-section'); // Defined in a previous step
+
+    let navHomeLink = null;
+    let navMapViewLink = null;
+
+    if (navLinks.length > 0) navHomeLink = navLinks[0]; // Assuming Home is the first link
+    if (navLinks.length > 2) navMapViewLink = navLinks[2]; // Assuming Map View is the third link (index 2)
+
 
     // Array of modal elements to animate
     const animatedModalElements = [modalSiteName, modalSiteImage, modalLongDesc, modalLocation];
 
+    let mapInstance = null;
     let lastFocusedElement; // To store the element that opened the modal
     let modalKeydownListener; // To store the focus trap event listener
     let documentKeydownListener; // To store the escape key event listener
 
     function displaySites(sites) {
+        // Example: at the beginning of displaySites(sites)
+        const mapViewSection = document.getElementById('map-view-section');
+        if (mapViewSection && !mapViewSection.classList.contains('hidden')) {
+            mapViewSection.classList.add('hidden');
+            // Potentially show the sites-container again if it was hidden
+            if (sitesContainer && sitesContainer.classList.contains('hidden')) {
+                 sitesContainer.classList.remove('hidden');
+            }
+        }
         if (!sitesContainer) return; // Guard clause for robustness
         // Clear placeholder content but keep the comment if it exists
         const commentNodes = [];
@@ -276,7 +298,157 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function initializeMap() {
+        // Check if the map container exists
+        const mapContainer = document.getElementById('map-container');
+        if (!mapContainer) {
+            console.error('Map container not found!');
+            return;
+        }
+
+        // Prevent re-initialization if mapInstance already exists
+        if (mapInstance) {
+            // Optional: Pan to default view if map is already initialized
+            // mapInstance.setView([10.7905, 78.7047], 7);
+            return;
+        }
+
+        // Coordinates for Tamil Nadu center and an appropriate zoom level
+        const tamilNaduCenter = [10.7905, 78.7047]; // Approximate center of Tamil Nadu
+        const initialZoom = 7;
+
+        mapInstance = L.map('map-container').setView(tamilNaduCenter, initialZoom);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(mapInstance);
+
+        // Add markers for each heritage site
+        heritageSitesData.forEach(site => {
+            if (site.coordinates) {
+                // Assuming coordinates are in "Ndd mm ss Edd mm ss" or similar format.
+                // Need to parse these into [latitude, longitude]
+                const coordsString = site.coordinates;
+                let lat = null;
+                let lon = null;
+
+                // Basic parsing for "NXX XX XX EXX XX XX" or "NXX.XXXX EXX.XXXX"
+                // This is a simplified parser and might need adjustment based on exact format variability.
+                const parts = coordsString.match(/[+-]?([0-9]*[.])?[0-9]+/g);
+
+                if (coordsString.includes('N') && coordsString.includes('E')) {
+                    // Example: "N10 46 59 E79 7 57" or "N10.78305 E79.1325"
+                    // This will attempt to convert DMS to DD if multiple parts are found for lat/lon,
+                    // or use decimal if single part is found.
+                    const latParts = [];
+                    const lonParts = [];
+                    let foundE = false;
+                    for(let i=0; i < parts.length; i++) {
+                        if(coordsString.substring(coordsString.indexOf(parts[i])-1, coordsString.indexOf(parts[i])).match(/[NE]/i) && i > 0) {
+                             if(coordsString.substring(coordsString.indexOf(parts[i])-1, coordsString.indexOf(parts[i])).match(/[E]/i)) foundE = true;
+                        }
+                        if(!foundE) latParts.push(parseFloat(parts[i]));
+                        else lonParts.push(parseFloat(parts[i]));
+                    }
+
+                    if (latParts.length === 3) { // Assuming Degrees, Minutes, Seconds
+                        lat = latParts[0] + latParts[1]/60 + latParts[2]/3600;
+                    } else if (latParts.length === 1) { // Assuming Decimal Degrees
+                        lat = latParts[0];
+                    }
+
+                    if (lonParts.length === 3) { // Assuming Degrees, Minutes, Seconds
+                        lon = lonParts[0] + lonParts[1]/60 + lonParts[2]/3600;
+                    } else if (lonParts.length === 1) { // Assuming Decimal Degrees
+                        lon = lonParts[0];
+                    }
+
+                     // Sign correction based on N/S/E/W if not already handled by parts matching negation
+                    if (coordsString.includes('S') && lat > 0) lat *= -1;
+                    if (coordsString.includes('W') && lon > 0) lon *= -1;
+
+
+                } else {
+                    // Fallback for simpler "lat, lon" string or if N/E parsing is tricky.
+                    // This part might need robust error handling or clearer data format.
+                    console.warn(`Coordinates for ${site.name} are in an unrecognized format: ${coordsString}`);
+                    // Attempt a simple split if it's comma separated decimal
+                     if(parts && parts.length === 2){
+                        lat = parseFloat(parts[0]);
+                        lon = parseFloat(parts[1]);
+                    } else {
+                        return; // Skip this site if coordinates can't be parsed
+                    }
+                }
+
+                if (lat !== null && lon !== null && !isNaN(lat) && !isNaN(lon)) {
+                    const marker = L.marker([lat, lon]).addTo(mapInstance);
+                    marker.bindPopup(`<b>${site.name}</b><br><button class="map-learn-more" data-id="${site.id}">Learn More</button>`);
+                } else {
+                    console.warn(`Could not parse coordinates for ${site.name}: ${coordsString}`);
+                }
+            }
+        });
+
+        // Optional: Add a resize listener to invalidate map size if it was hidden when initialized
+        // This can be important if the map is initialized in a hidden div
+        mapInstance.whenReady(() => {
+            setTimeout(() => { // Use a timeout to ensure the container is visible and has dimensions
+                mapInstance.invalidateSize();
+            }, 0);
+        });
+    }
+
     // Event Listeners
+
+    function setActiveLink(activeLink) {
+        navLinks.forEach(link => link.classList.remove('active'));
+        if (activeLink) {
+            activeLink.classList.add('active');
+        }
+    }
+
+    if (navHomeLink) {
+        navHomeLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (introductionSection) introductionSection.classList.remove('hidden');
+            if (searchSection) searchSection.classList.remove('hidden');
+            if (sitesContainer) sitesContainer.classList.remove('hidden');
+            if (mapViewSection) mapViewSection.classList.add('hidden');
+            setActiveLink(navHomeLink);
+        });
+    }
+
+    if (navMapViewLink) {
+        navMapViewLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (introductionSection) introductionSection.classList.add('hidden');
+            if (searchSection) searchSection.classList.add('hidden');
+            if (sitesContainer) sitesContainer.classList.add('hidden');
+
+            if (mapViewSection) mapViewSection.classList.remove('hidden');
+
+            initializeMap(); // Initialize map if not already done
+            if (mapInstance) { // mapInstance is from a previous step
+                setTimeout(() => { // Use a timeout to ensure the container is visible and has dimensions
+                    mapInstance.invalidateSize();
+                }, 10);
+            }
+            setActiveLink(navMapViewLink);
+        });
+    }
+
+    if (mapViewSection) {
+        mapViewSection.addEventListener('click', function(event) {
+            if (event.target.classList.contains('map-learn-more')) {
+                const siteId = event.target.dataset.id;
+                if (siteId) {
+                    openModal(parseInt(siteId, 10)); // openModal is an existing function
+                }
+            }
+        });
+    }
+
     if (sitesContainer) {
         sitesContainer.addEventListener('click', (event) => {
             if (event.target.classList.contains('learn-more')) {
@@ -302,8 +474,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Event Listener for search input
     if (searchInput) {
         searchInput.addEventListener('input', () => {
-            const searchTerm = searchInput.value.trim(); // Use trim for logic, but keep original for display
-            if (clearSearchButton) { // Check if button exists
+            const searchTerm = searchInput.value.trim();
+            // const clearSearchButton = document.getElementById('clear-search-btn'); // Should be defined
+            if (clearSearchButton) {
                 if (searchTerm !== '') {
                     clearSearchButton.classList.remove('hidden');
                 } else {
@@ -312,15 +485,13 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const lowerCaseSearchTerm = searchTerm.toLowerCase();
-            if (lowerCaseSearchTerm === '') {
-                displaySites(heritageSitesData);
-            } else {
-                const filteredSites = heritageSitesData.filter(site => {
-                    return site.name.toLowerCase().includes(lowerCaseSearchTerm) ||
-                           site.short_description.toLowerCase().includes(lowerCaseSearchTerm);
-                });
-                displaySites(filteredSites);
-            }
+            // heritageSitesData is global
+            const filteredSites = heritageSitesData.filter(site => {
+                return site.name.toLowerCase().includes(lowerCaseSearchTerm) ||
+                       site.short_description.toLowerCase().includes(lowerCaseSearchTerm);
+            });
+            displaySites(filteredSites); // displaySites is global and hides map
+            if (navHomeLink) setActiveLink(navHomeLink); // Set Home link active
         });
 
         // Initial check for search input value on page load (e.g., if pre-filled)
@@ -336,9 +507,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (clearSearchButton) {
         clearSearchButton.addEventListener('click', () => {
             searchInput.value = '';
-            displaySites(heritageSitesData); // Display all sites
-            clearSearchButton.classList.add('hidden'); // Hide the button
-            searchInput.focus(); // Set focus back to the search input
+            displaySites(heritageSitesData); // displaySites is global and hides map
+            clearSearchButton.classList.add('hidden');
+            searchInput.focus();
+            if (navHomeLink) setActiveLink(navHomeLink); // Set Home link active
         });
     }
 
@@ -367,4 +539,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }, index * 150); // 150ms stagger
         }
     });
+
+    if (navHomeLink) {
+        setActiveLink(navHomeLink);
+    } else if (navLinks.length > 0) {
+        setActiveLink(navLinks[0]);
+    }
 });
