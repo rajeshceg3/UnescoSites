@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
             name: "Great Living Chola Temples",
             short_description: "Magnificent 11th/12th-century Hindu temples.",
             long_description: "The Great Living Chola Temples were built by kings of the Chola Empire. The site includes three great 11th- and 12th-century Temples: the Brihadisvara Temple at Thanjavur, the Brihadisvara Temple at Gangaikondacholisvaram and the Airavatesvara Temple at Darasuram. They testify to the brilliant achievements of the Chola in architecture, sculpture, painting and bronze casting.",
-            image_url: "images/great_chola_temples.jpg", // Placeholder
+            image_url: "images/great_chola_temples.jpg",
             coordinates: "N10 46 59 E79 7 57",
             specific_sites: ["Brihadeeswarar Temple, Thanjavur", "Brihadisvara Temple, Gangaikondacholapuram", "Airavatesvara Temple, Darasuram"]
         },
@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
             name: "Group of Monuments at Mahabalipuram",
             short_description: "7th/8th-century Pallava rock-cut sanctuaries.",
             long_description: "This group of sanctuaries, founded by the Pallava kings, was carved out of rock along the Coromandel coast in the 7th and 8th centuries. It is known especially for its rathas (temples in the form of chariots), mandapas (cave sanctuaries), giant open-air reliefs such as the famous 'Descent of the Ganges', and the Shore Temple.",
-            image_url: "images/mahabalipuram_monuments.jpg", // Placeholder
+            image_url: "images/mahabalipuram_monuments.jpg",
             coordinates: "N12 37 0.012 E80 11 30.012",
             key_structures: ["Rathas", "Mandapas", "Descent of the Ganges", "Shore Temple"]
         },
@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
             name: "Nilgiri Mountain Railway",
             short_description: "Historic metre-gauge railway scaling the Nilgiri hills.",
             long_description: "The Nilgiri Mountain Railway, a 46-km long metre-gauge single-track railway in Tamil Nadu, was completed in 1908. It scales an elevation from 326m to 2,203m, representing advanced technology of its time and uses a unique rack and pinion system. It's part of the Mountain Railways of India UNESCO site.",
-            image_url: "images/nilgiri_mountain_railway.jpg", // Placeholder
+            image_url: "images/nilgiri_mountain_railway.jpg",
             coordinates: "N11 30 37.008 E76 56 8.988"
         },
         {
@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
             name: "Western Ghats (Kalakad-Mundanthurai)",
             short_description: "Biodiversity hotspot: Kalakad-Mundanthurai Tiger Reserve.",
             long_description: "The Western Ghats are recognized as one of the world’s eight ‘hottest hotspots’ of biological diversity. Kalakad-Mundanthurai Tiger Reserve, part of the Agasthyamalai sub-cluster, is known for its rich flora and fauna, including tigers and many endemic species. It represents the unique montane forest ecosystems of the southern Western Ghats.",
-            image_url: "images/western_ghats_kalakad.jpg", // Placeholder
+            image_url: "images/western_ghats_kalakad.jpg",
             coordinates: "N8 31 47 E77 14 59 (Agasthyamalai sub-cluster)"
         },
         {
@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
             name: "Western Ghats (Mukurti National Park)",
             short_description: "High-altitude grasslands and sholas in the Nilgiris.",
             long_description: "Mukurti National Park, located in the Nilgiris sub-cluster of the Western Ghats, is characterized by its montane grasslands and shola forests. It's home to the endangered Nilgiri Tahr and a variety of endemic flora and fauna, showcasing the unique ecosystem of the higher altitudes of the Western Ghats.",
-            image_url: "images/western_ghats_mukurti.jpg", // Placeholder
+            image_url: "images/western_ghats_mukurti.jpg",
             coordinates: "N11 19 50 E76 18 34 (Nilgiris sub-cluster)"
         }
     ];
@@ -63,6 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let documentKeydownListener; // To store the escape key event listener
 
     function displaySites(sites) {
+        if (!sitesContainer) return; // Guard clause for robustness
         // Clear placeholder content but keep the comment if it exists
         const commentNodes = [];
         sitesContainer.childNodes.forEach(node => {
@@ -192,18 +193,22 @@ document.addEventListener('DOMContentLoaded', () => {
         modalSiteImage.classList.remove('image-error');
         modalSiteImage.alt = site.name; // Set base alt text
 
-        // Remove previous error handler if one was attached
-        if (modalSiteImage._currentOnError) {
-            modalSiteImage.removeEventListener('error', modalSiteImage._currentOnError);
+        // Remove previous named error handler if any
+        if (modalSiteImage.currentErrorHandler) {
+            modalSiteImage.removeEventListener('error', modalSiteImage.currentErrorHandler);
         }
 
-        // Define the new error handler
-        modalSiteImage._currentOnError = function() {
+        // Define the new error handler for the current site
+        // 'site' variable is accessible here due to closure
+        const handleModalImageError = function() {
             this.classList.add('image-error');
-            // 'site' variable should be accessible in this scope from openModal
             this.alt = 'Image for ' + site.name + ' is not available. Please check the URL or try again later.';
+            // Ensure this function is not called repeatedly for the same error by removing itself
+            this.removeEventListener('error', handleModalImageError);
         };
-        modalSiteImage.addEventListener('error', modalSiteImage._currentOnError);
+
+        modalSiteImage.currentErrorHandler = handleModalImageError; // Store the handler
+        modalSiteImage.addEventListener('error', modalSiteImage.currentErrorHandler);
 
         // Then, set the src:
         modalSiteImage.src = site.image_url;
