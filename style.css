@@ -173,6 +173,110 @@ main {
     transform: translateY(0);
 }
 
+/* Leaflet Map Customizations */
+
+/* Style for popups to better match the site's aesthetic */
+.leaflet-popup-content-wrapper {
+    border-radius: 6px; /* Match site's border radius */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15); /* Consistent shadow */
+}
+
+.leaflet-popup-content {
+    font-family: 'Merriweather', serif; /* Match site's body font */
+    color: #4a4a4a; /* Match site's text color */
+    font-size: 0.95em;
+    line-height: 1.5;
+}
+
+.leaflet-popup-content h2, .leaflet-popup-content b { /* Target site name in popup */
+    font-family: 'Montserrat', sans-serif; /* Match site's heading font */
+    color: #004d40; /* Match site's heading color */
+    font-size: 1.1em;
+    margin-bottom: 5px;
+}
+
+.leaflet-popup-tip-container {
+    /* Optional: Hide or style the tip if it doesn't fit the design */
+}
+
+.leaflet-popup-close-button {
+    color: #555 !important; /* Darker close button for better visibility */
+    padding: 4px 4px 0 0 !important;
+}
+.leaflet-popup-close-button:hover {
+    color: #000 !important;
+}
+
+/* Style for the "Learn More" button inside map popups */
+.map-learn-more {
+    background-color: #d77a00; /* Match existing .learn-more buttons */
+    color: #fff;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+    text-align: center;
+    margin-top: 8px;
+    display: inline-block;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.map-learn-more:hover {
+    background-color: #b86a00; /* Darker shade */
+    transform: translateY(-1px);
+}
+
+.map-learn-more:focus {
+    outline: 2px solid #005c4e;
+    outline-offset: 1px;
+    background-color: #b86a00; /* Consistent with hover */
+}
+
+/* Zoom controls styling (optional, if they need adjustment) */
+.leaflet-control-zoom a {
+    border-radius: 4px; /* Match site's border radius */
+    color: #004d40; /* Match site's theme color */
+    border-color: #ccc;
+}
+.leaflet-control-zoom a:hover {
+    background-color: #f0f0f0;
+    color: #00382e;
+    border-color: #aaa;
+}
+
+/* Attribution styling */
+.leaflet-control-attribution {
+    font-size: 0.8em;
+    background: rgba(255, 255, 255, 0.7); /* Slightly transparent background */
+    padding: 2px 5px;
+    border-radius: 3px;
+}
+.leaflet-control-attribution a {
+    color: #d77a00; /* Match site's link color */
+}
+
+/* Map View Section Styling */
+#map-view-section {
+    margin-top: 20px; /* Add some space above the map section */
+    padding: 20px;
+    background-color: #fff; /* Optional: if you want a background for the section title area */
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05); /* Consistent with other sections */
+}
+
+#map-container {
+    height: 500px; /* Define a specific height for the map */
+    width: 100%;   /* Make the map responsive within its container */
+    border-radius: 8px; /* Optional: if you want rounded corners for the map itself */
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1); /* Subtle shadow for the map container */
+}
+
+/* Ensure the .hidden class is effective for this new section */
+#map-view-section.hidden {
+    display: none !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
     /* Disable or minimize transitions and animations */
     .fade-in-section,
