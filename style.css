@@ -323,9 +323,9 @@ button:hover, .button:hover {
 }
 
 #site-detail-modal.hidden {
-    display: flex; /* Keep flex for centering, just control visibility with opacity/visibility */
-    opacity: 0;
-    visibility: hidden;
+    /* display: flex; was here, removed as global .hidden takes precedence with display:none !important */
+    opacity: 0; /* Target state for opacity transition */
+    visibility: hidden; /* Target state for visibility transition */
 }
 
 /* Styles for when modal is shown (JS will remove .hidden, not add a new class) */
