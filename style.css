@@ -27,15 +27,18 @@ h1, h2, h3, h4, h5, h6 {
 
 h1 {
     font-size: 2.5em;
+    letter-spacing: -0.5px; /* Tighter large heading */
 }
 
 h2 {
     font-size: 1.8em;
+    letter-spacing: -0.25px; /* Slightly tighter h2 */
 }
 
 p {
     margin-bottom: 1.2em; /* Increased margin-bottom */
     font-size: 1em;
+    letter-spacing: 0.1px; /* Very subtle letter spacing for readability */
 }
 
 a {
@@ -93,20 +96,34 @@ nav ul li a {
     padding: 0.75em 1.5em; /* Increased padding */
     border-radius: 4px;
     text-decoration: none;
-    transition: background-color 0.3s ease, color 0.3s ease; /* Added color transition */
+    transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease; /* Added transform and box-shadow transition */
     display: inline-block; /* Ensure padding is respected */
+    letter-spacing: 0.3px; /* Refined spacing for nav items */
 }
 
 nav ul li a:hover {
     background-color: #005c4e; /* Lighter shade of nav background */
     color: #ffffff; /* White text on hover */
     text-decoration: none;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+nav ul li a:focus {
+    background-color: #005c4e; /* Similar to hover */
+    color: #ffffff; /* Similar to hover */
+    text-decoration: none;
+    transform: translateY(-2px); /* Similar to hover */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2); /* Similar to hover */
+    outline: 2px solid #d77a00;
+    outline-offset: 2px;
 }
 
 nav ul li a.active {
     background-color: #d77a00; /* Primary orange accent */
     color: #ffffff; /* White text for active link */
     font-weight: bold;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
 }
 
 /* Main Content */
@@ -147,8 +164,8 @@ main {
     display: flex;
     flex-direction: column;
     opacity: 0; /* Initial state for staggered load */
-    transform: translateY(20px); /* Initial state for staggered load */
-    transition: opacity 0.5s ease-out, transform 0.5s ease-out, box-shadow 0.3s ease, border-color 0.3s ease; /* Added border-color transition */
+    transform: translateY(10px); /* Initial state for staggered load */
+    transition: opacity 0.4s ease-out, transform 0.4s ease-out, box-shadow 0.3s ease, border-color 0.3s ease; /* Added border-color transition */
 }
 
 .site-card.card-visible {
@@ -156,22 +173,74 @@ main {
     transform: translateY(0);
 }
 
-.image-error {
-    border: 2px dashed #cc0000; /* Red dashed border */
-    background-color: #f0f0f0; /* Light gray background */
-    color: #cc0000; /* Red text color */
-    text-align: center;
-    display: flex; /* To center text if using pseudo-elements or alt text */
-    align-items: center;
-    justify-content: center;
-    font-size: 0.9em;
-    /* Ensure it still occupies space */
-    min-height: 100px; /* Or a more appropriate fallback height */
-    aspect-ratio: 16 / 9; /* Maintain aspect ratio if possible */
+@media (prefers-reduced-motion: reduce) {
+    /* Disable or minimize transitions and animations */
+    .fade-in-section,
+    .site-card,
+    .site-card.card-visible,
+    .modal-content,
+    #site-detail-modal:not(.hidden) .modal-content, /* Ensure modal content is directly visible */
+    .modal-element-animate,
+    .modal-element-animate.modal-element-visible {
+        transition-duration: 0.01ms !important; /* Effectively instant */
+        animation-duration: 0.01ms !important; /* Effectively instant for keyframe animations */
+        animation-iteration-count: 1 !important; /* Stop looping animations like spinners */
+        opacity: 1 !important; /* Ensure elements are visible */
+        transform: none !important; /* Reset transforms for general cases */
+        scale: 1 !important; /* Ensure scale is reset */
+    }
+
+    /* Specific overrides for hover/active effects if they involve transforms */
+    .site-card:hover, .site-card:focus-within,
+    nav ul li a:hover, nav ul li a:focus,
+    button:hover, button:focus, .button:hover, .button:focus,
+    .learn-more:hover, .learn-more:focus,
+    .close-modal:hover, .close-modal:focus,
+    #clear-search-btn:hover, #clear-search-btn:focus, #clear-search-btn:active {
+        transform: none !important; /* Remove hover/focus transforms */
+    }
+
+    /* Ensure modal is simply visible, no complex transitions */
+    #site-detail-modal,
+    #site-detail-modal .modal-content { /* This targets .modal-content in its initial animated state */
+        transition-property: opacity, visibility !important; /* Only allow opacity/visibility for on/off */
+        transform: none !important;
+        scale: 1 !important;
+    }
+    /* This rule ensures that when the modal becomes visible, its content is immediately in the final state */
+     #site-detail-modal:not(.hidden) .modal-content {
+        opacity: 1 !important;
+        transform: none !important;
+        scale: 1 !important;
+    }
+
+    /* Stop spinner animation */
+    .spinner {
+        animation: none !important; /* Completely remove animation */
+        border-top-color: rgba(0, 77, 64, 0.2) !important; /* Make all borders same color for static look */
+    }
+
+    /* Ensure lazy-loaded images don't rely on transform/opacity animation */
+    .site-card img.image-loaded {
+         animation: none !important; /* Remove fadeInImage animation */
+         opacity: 1 !important; /* Ensure fully visible */
+         transform: none !important; /* Ensure scale is reset if it was part of an animation */
+         scale: 1 !important; /* Explicitly reset scale */
+    }
 }
 
-.image-error::after {
-    content: 'Image not available'; /* Display text */
+.image-error {
+    border: 1px solid #e0e0e0; /* Softer border */
+    background-color: #f8f8f8; /* Softer background */
+    color: #777; /* Softer text color for the alt text */
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9em; /* Keep font size for alt text */
+    min-height: 100px;
+    aspect-ratio: 16 / 9;
+    /* The ::after pseudo-element is removed, alt text will be shown by the browser */
 }
 
 /* Search Input Styling */
@@ -187,14 +256,14 @@ main {
     border: 1px solid #ccc;
     border-radius: 5px;
     box-shadow: inset 0 1px 3px rgba(0,0,0,0.06);
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Ensure smooth transition */
     padding-right: 35px; /* Make space for the button */
 }
 
 #search-input:focus {
     border-color: #d77a00;
     box-shadow: 0 0 5px rgba(215, 122, 0, 0.5), inset 0 1px 3px rgba(0,0,0,0.06);
-    outline: none;
+    outline: none; /* Maintained as per original */
 }
 
 #clear-search-btn {
@@ -209,10 +278,23 @@ main {
     color: #777;
     padding: 5px; /* Add some padding for easier clicking */
     line-height: 1; /* Ensure icon is centered if it's text-based */
+    transition: color 0.3s ease, transform 0.2s ease-out; /* Adjusted transform transition */
 }
 
 #clear-search-btn:hover {
     color: #333;
+    transform: scale(1.1);
+}
+
+#clear-search-btn:active {
+    transform: scale(0.9); /* Subtle press-down effect */
+}
+
+#clear-search-btn:focus {
+    color: #333; /* Consistent with hover */
+    transform: scale(1.1); /* Consistent with hover */
+    outline: 1px solid #004d40;
+    border-radius: 4px; /* To make the outline follow the button shape if it were rounder */
 }
 
 #clear-search-btn.hidden {
@@ -231,6 +313,7 @@ main {
     transform: translateY(-5px);
     box-shadow: 0 8px 16px rgba(0,0,0,0.2); /* Enhanced shadow */
     border-color: #d77a00; /* Accent color border highlight */
+    /* transition for these properties is on the .site-card base class */
 }
 
 .site-card:focus-within {
@@ -238,6 +321,7 @@ main {
     box-shadow: 0 8px 16px rgba(0,0,0,0.2); /* Same as hover */
     border-color: #005c4e; /* Use a distinct color for focus, e.g., the theme's darker teal/blue */
     outline: 1px solid #005c4e; /* Optional: an additional subtle outline on the card itself */
+    /* transition for these properties is on the .site-card base class */
 }
 
 .site-card img {
@@ -245,6 +329,8 @@ main {
     margin-bottom: 15px;
     aspect-ratio: 16 / 9; /* Maintain aspect ratio for images */
     object-fit: cover; /* Ensure images cover the area well */
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1); /* Subtle shadow for images */
+    transition: box-shadow 0.3s ease; /* Smooth transition for shadow changes */
 }
 
 .site-card img.lazy-load {
@@ -253,12 +339,18 @@ main {
 }
 
 .site-card img.image-loaded {
-    animation: fadeInImage 0.5s ease-in-out;
+    animation: fadeInImage 0.4s ease-out; /* Adjusted duration and easing */
 }
 
 @keyframes fadeInImage {
-    from { opacity: 0.5; } /* Start from slightly transparent if coming from a background color */
-    to { opacity: 1; }
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
 .site-card h2 {
@@ -271,6 +363,7 @@ main {
     color: #666;
     flex-grow: 1; /* Allows description to take available space */
     margin-bottom: 15px;
+    line-height: 1.5; /* Increased line height for dense text */
 }
 
 /* Buttons (general styling, can be overridden) */
@@ -281,27 +374,43 @@ button, .button {
     cursor: pointer;
     font-size: 1em;
     text-align: center;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease; /* Added box-shadow to transition */
 }
 
 button:hover, .button:hover {
     transform: translateY(-2px);
+    /* General background color change on hover can be tricky without knowing the base.
+       Specific button types below will handle their own background changes.
+       Adding a subtle shadow as a general feedback */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+button:focus, .button:focus {
+    transform: translateY(-2px); /* Consistent with hover */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Consistent with hover */
+    outline: 2px solid #004d40; /* Default outline for general buttons */
+    outline-offset: 2px;
 }
 
 .learn-more {
     background-color: #d77a00; /* Matching new link color */
     color: #fff;
     align-self: flex-start; /* Align button to the start of the card footer */
+    /* box-shadow transition is inherited from .button */
 }
 
 .learn-more:hover {
     background-color: #b86a00; /* Darker shade of the button */
+    transform: translateY(-2px); /* Explicitly keep or override if general button hover is different */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
 
 .learn-more:focus {
-    outline: 2px solid #005c4e; /* Example: Using a theme color for outline */
-    outline-offset: 2px; /* To ensure the outline is outside the button */
-    background-color: #b86a00; /* Consistent with hover, or choose a specific focus color */
+    background-color: #b86a00; /* Consistent with hover */
+    transform: translateY(-2px); /* Consistent with hover */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15); /* Consistent with hover */
+    outline: 2px solid #005c4e; /* Specific outline as requested */
+    outline-offset: 2px;
 }
 
 /* Modal (#site-detail-modal) */
@@ -319,7 +428,7 @@ button:hover, .button:hover {
     padding: 20px; /* Padding for smaller screens so modal doesn't touch edges */
     opacity: 0; /* Start hidden for transition */
     visibility: hidden; /* Start hidden for transition */
-    transition: opacity 0.3s ease, visibility 0.3s ease;
+    transition: opacity 0.25s ease-in-out, visibility 0.25s ease-in-out;
 }
 
 #site-detail-modal.hidden {
@@ -345,8 +454,8 @@ button:hover, .button:hover {
     overflow-y: auto; /* Scroll for content exceeding max-height */
     position: relative; /* For positioning close button */
     opacity: 0; /* Base state for animation */
-    transform: translateY(-20px) scale(0.95); /* Base state for animation: slide down and slightly scaled */
-    transition: opacity 0.3s ease, transform 0.3s ease; /* Smooth transition for opacity and transform */
+    transform: translateY(0px) scale(0.98); /* Base state for animation: gentle grow from center */
+    transition: opacity 0.25s ease-out 0.1s, transform 0.25s ease-out 0.1s; /* Delayed to sync with overlay */
 }
 
 #site-detail-modal:not(.hidden) .modal-content {
@@ -362,13 +471,15 @@ button:hover, .button:hover {
     object-fit: cover;
     border-radius: 4px;
     margin-bottom: 20px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1); /* Subtle shadow for images */
+    transition: box-shadow 0.3s ease; /* Smooth transition for shadow changes */
 }
 
 /* Animation classes for modal elements */
 .modal-element-animate {
     opacity: 0;
-    transform: translateY(10px);
-    transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+    transform: translateY(5px); /* Subtle upward movement */
+    transition: opacity 0.3s ease-out, transform 0.3s ease-out; /* Faster animation */
 }
 
 .modal-element-animate.modal-element-visible {
@@ -386,6 +497,7 @@ button:hover, .button:hover {
 .modal-content .long-desc {
     font-size: 1.05em;
     margin-bottom: 15px;
+    line-height: 1.65; /* Improved readability for long text blocks */
 }
 
 .modal-content .location {
@@ -403,10 +515,21 @@ button:hover, .button:hover {
     right: 15px;
     padding: 8px 12px;
     font-size: 0.9em;
+    /* box-shadow and transform transitions inherited from .button */
 }
 
 .close-modal:hover {
-    background-color: #c7604c;
+    background-color: #c7604c; /* Darker shade */
+    transform: translateY(-2px); /* Explicitly keep or override */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.close-modal:focus {
+    background-color: #c7604c; /* Consistent with hover */
+    transform: translateY(-2px); /* Consistent with hover */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Consistent with hover */
+    outline: 2px solid #004d40; /* Specific outline as requested */
+    outline-offset: 2px;
 }
 
 /* Footer */
@@ -497,8 +620,8 @@ footer {
 /* Page Section Fade-in Animation */
 .fade-in-section {
     opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    transform: translateY(10px);
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
 }
 
 .fade-in-section.is-visible {
