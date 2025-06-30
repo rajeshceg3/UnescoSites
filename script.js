@@ -3,44 +3,80 @@ document.addEventListener('DOMContentLoaded', () => {
         {
             id: 1,
             name: "Great Living Chola Temples",
-            short_description: "Magnificent 11th/12th-century Hindu temples.",
-            long_description: "The Great Living Chola Temples were built by kings of the Chola Empire. The site includes three great 11th- and 12th-century Temples: the Brihadisvara Temple at Thanjavur, the Brihadisvara Temple at Gangaikondacholisvaram and the Airavatesvara Temple at Darasuram. They testify to the brilliant achievements of the Chola in architecture, sculpture, painting and bronze casting.",
-            image_url: "images/great_chola_temples.jpg",
+            short_description: "Magnificent 11th/12th-century Hindu temples representing the pinnacle of Chola architecture.",
+            long_description: "The Great Living Chola Temples were built by kings of the Chola Empire, which stretched over all of south India and the neighbouring islands. The site includes three great 11th- and 12th-century Temples: the Brihadisvara Temple at Thanjavur (built by Raja Raja Chola I between 1003-1010 CE), the Brihadisvara Temple at Gangaikondacholisvaram (completed in 1035 CE by Rajendra I), and the Airavatesvara Temple at Darasuram (built by Rajaraja II). The Thanjavur temple features a 216-foot tall vimana made of solid granite with 13 receding tiers. These temples testify to the brilliant achievements of the Chola in architecture, sculpture, painting and bronze casting, with 81 of the 108 karanas (dance poses) of Bharatanatyam carved on the walls.",
+            image_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Le_temple_de_Brihadishwara_%28Tanjore%2C_Inde%29_%2814354574611%29.jpg/800px-Le_temple_de_Brihadishwara_%28Tanjore%2C_Inde%29_%2814354574611%29.jpg",
             coordinates: "N10 46 59 E79 7 57",
-            specific_sites: ["Brihadeeswarar Temple, Thanjavur", "Brihadisvara Temple, Gangaikondacholapuram", "Airavatesvara Temple, Darasuram"]
+            specific_sites: ["Brihadeeswarar Temple, Thanjavur (216 ft vimana)", "Brihadisvara Temple, Gangaikondacholapuram (53m vimana)", "Airavatesvara Temple, Darasuram (24m vimana with chariot design)"],
+            year_built: "1003-1173 CE",
+            dynasty: "Chola Empire",
+            architectural_style: "Dravidian",
+            significance: "Represents the zenith of Chola architectural achievement and living temple traditions"
         },
         {
             id: 2,
             name: "Group of Monuments at Mahabalipuram",
-            short_description: "7th/8th-century Pallava rock-cut sanctuaries.",
-            long_description: "This group of sanctuaries, founded by the Pallava kings, was carved out of rock along the Coromandel coast in the 7th and 8th centuries. It is known especially for its rathas (temples in the form of chariots), mandapas (cave sanctuaries), giant open-air reliefs such as the famous 'Descent of the Ganges', and the Shore Temple.",
-            image_url: "images/mahabalipuram_monuments.jpg",
+            short_description: "7th/8th-century Pallava rock-cut sanctuaries and the famous Shore Temple by the sea.",
+            long_description: "This group of sanctuaries, founded by the Pallava kings, was carved out of rock along the Coromandel coast in the 7th and 8th centuries. Created during the reign of Narasimhavarman I and II, it represents one of the earliest experiments in Dravidian architecture. The site is known especially for its rathas (temples in the form of chariots), mandapas (cave sanctuaries), the giant open-air relief 'Descent of the Ganges' (the world's largest bas-relief measuring 96 x 43 feet), and the iconic Shore Temple. The Shore Temple, built around 725 AD by Narasimhavarman II, is one of the oldest structural stone temples in Southern India, standing majestically by the Bay of Bengal. The monuments showcase the transition from rock-cut architecture to free-standing temples.",
+            image_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/01MahabalipuramShoreTemple.jpg/800px-01MahabalipuramShoreTemple.jpg",
             coordinates: "N12 37 0.012 E80 11 30.012",
-            key_structures: ["Rathas", "Mandapas", "Descent of the Ganges", "Shore Temple"]
+            key_structures: ["Shore Temple (8th century)", "Pancha Rathas (Five Chariots)", "Descent of the Ganges relief", "Varaha Cave Temple", "Mahishasuramardini Cave"],
+            year_built: "630-728 CE",
+            dynasty: "Pallava Dynasty",
+            architectural_style: "Early Dravidian",
+            significance: "Represents the birth of Dravidian architecture and contains the world's largest bas-relief"
         },
         {
             id: 3,
             name: "Nilgiri Mountain Railway",
-            short_description: "Historic metre-gauge railway scaling the Nilgiri hills.",
-            long_description: "The Nilgiri Mountain Railway, a 46-km long metre-gauge single-track railway in Tamil Nadu, was completed in 1908. It scales an elevation from 326m to 2,203m, representing advanced technology of its time and uses a unique rack and pinion system. It's part of the Mountain Railways of India UNESCO site.",
-            image_url: "images/nilgiri_mountain_railway.jpg",
-            coordinates: "N11 30 37.008 E76 56 8.988"
+            short_description: "Historic metre-gauge railway scaling the Nilgiri hills using unique rack and pinion system.",
+            long_description: "The Nilgiri Mountain Railway, a 46-km long metre-gauge single-track railway in Tamil Nadu, was completed in 1908 and represents a remarkable engineering achievement. Built by the British, it scales an elevation from 326m at Mettupalayam to 2,203m at Udagamandalam (Ooty), using a unique rack and pinion system on the steeper gradients. The railway uses Swiss-designed locomotives and features 16 tunnels, 250 bridges, and navigates through 208 curves. This hill railway was part of the larger Mountain Railways of India UNESCO inscription and serves as a vital link to the hill stations of the Nilgiris. The journey offers breathtaking views of tea plantations, dense forests, and valleys, making it both a transportation marvel and tourist attraction.",
+            image_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Nilgiri_Mountain_Railway_train.jpg/800px-Nilgiri_Mountain_Railway_train.jpg",
+            coordinates: "N11 30 37.008 E76 56 8.988",
+            key_features: ["46 km track length", "Rack and pinion system", "16 tunnels and 250 bridges", "208 curves", "1,877m elevation gain"],
+            year_built: "1908",
+            engineer: "British Colonial Government",
+            gauge: "Metre gauge (1000mm)",
+            significance: "Outstanding example of hill railway engineering and colonial transportation heritage"
         },
         {
             id: 4,
             name: "Western Ghats (Kalakad-Mundanthurai)",
-            short_description: "Biodiversity hotspot: Kalakad-Mundanthurai Tiger Reserve.",
-            long_description: "The Western Ghats are recognized as one of the world’s eight ‘hottest hotspots’ of biological diversity. Kalakad-Mundanthurai Tiger Reserve, part of the Agasthyamalai sub-cluster, is known for its rich flora and fauna, including tigers and many endemic species. It represents the unique montane forest ecosystems of the southern Western Ghats.",
-            image_url: "images/western_ghats_kalakad.jpg",
-            coordinates: "N8 31 47 E77 14 59 (Agasthyamalai sub-cluster)"
+            short_description: "Biodiversity hotspot: Kalakad-Mundanthurai Tiger Reserve in the Agasthyamalai sub-cluster.",
+            long_description: "The Western Ghats are recognized as one of the world's eight 'hottest hotspots' of biological diversity, older than the Himalayas and containing exceptional levels of plant and animal endemism. The Kalakad-Mundanthurai Tiger Reserve, covering 895 sq km, is part of the Agasthyamalai sub-cluster and represents the unique montane forest ecosystems of the southern Western Ghats. This reserve is home to several endangered species including tigers, elephants, leopards, and the Nilgiri Tahr. It contains over 2000 species of flowering plants, 294 species of birds, and numerous endemic species. The landscape ranges from tropical forests to montane grasslands, with elevations varying from 100m to 1868m at Agasthyarkoodam peak.",
+            image_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Kalakkad_Mundanthurai_Tiger_Reserve.jpg/800px-Kalakkad_Mundanthurai_Tiger_Reserve.jpg",
+            coordinates: "N8 31 47 E77 14 59",
+            biodiversity: ["2000+ flowering plants", "294 bird species", "Tigers and elephants", "Endemic species", "Montane forests"],
+            year_established: "1988",
+            area: "895 sq km",
+            elevation_range: "100m - 1,868m",
+            significance: "Critical biodiversity conservation area and endemic species habitat"
         },
         {
             id: 5,
             name: "Western Ghats (Mukurti National Park)",
-            short_description: "High-altitude grasslands and sholas in the Nilgiris.",
-            long_description: "Mukurti National Park, located in the Nilgiris sub-cluster of the Western Ghats, is characterized by its montane grasslands and shola forests. It's home to the endangered Nilgiri Tahr and a variety of endemic flora and fauna, showcasing the unique ecosystem of the higher altitudes of the Western Ghats.",
-            image_url: "images/western_ghats_mukurti.jpg",
-            coordinates: "N11 19 50 E76 18 34 (Nilgiris sub-cluster)"
+            short_description: "High-altitude grasslands and sholas in the Nilgiris, home to the endangered Nilgiri Tahr.",
+            long_description: "Mukurti National Park, located in the Nilgiris sub-cluster of the Western Ghats, covers 78.46 sq km and is characterized by its unique montane grasslands and shola forests. Established in 1982, it serves as a crucial habitat for the endangered Nilgiri Tahr (Nilgiritragus hylocrius), with one of the largest populations of this endemic mountain goat. The park's landscape consists of rolling grasslands interspersed with shola forests (tropical montane forests) in valleys and depressions. The elevation ranges from 1,200m to 2,554m, creating diverse microclimates. The park also protects important watersheds and is home to other wildlife including elephants, sambar deer, wild boar, and over 100 bird species including several endemics.",
+            image_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Nilgiri_Tahr_in_Mukurthi_National_Park.jpg/800px-Nilgiri_Tahr_in_Mukurthi_National_Park.jpg",
+            coordinates: "N11 19 50 E76 18 34",
+            key_species: ["Nilgiri Tahr (endangered)", "Asian Elephants", "Sambar Deer", "100+ bird species", "Endemic flora"],
+            year_established: "1982",
+            area: "78.46 sq km",
+            elevation_range: "1,200m - 2,554m",
+            significance: "Critical habitat for endangered Nilgiri Tahr and montane ecosystem conservation"
+        },
+        {
+            id: 6,
+            name: "Brihadeeswara Temple, Thanjavur",
+            short_description: "The crown jewel of Chola architecture, built by Raja Raja Chola I with the world's first granite dome.",
+            long_description: "The Brihadeeswara Temple, also known as Peruvudaiyar Kovil, stands as the masterpiece of Chola architecture and one of India's most remarkable temples. Built between 1003-1010 CE by Raja Raja Chola I, this temple showcases unprecedented architectural innovation. The main tower (vimana) rises to 216 feet, crowned by a monolithic granite dome weighing 80 tons - an engineering marvel of its time. The temple is constructed entirely of granite, transported from quarries 60 km away. The inner sanctum houses one of India's largest Shiva lingas, and the walls feature extensive Tamil inscriptions detailing the temple's administration and gifts. The temple complex includes numerous sculptures, with 81 of the 108 Bharatanatyam dance poses carved on the walls, making it a treasury of classical Indian art.",
+            image_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c4/Brihadishvara_Temple_Thanjavur.jpg/800px-Brihadishvara_Temple_Thanjavur.jpg",
+            coordinates: "N10 46 59 E79 7 57",
+            architectural_features: ["216-foot granite vimana", "80-ton monolithic dome", "Massive Shiva linga", "Tamil inscriptions", "Bharatanatyam sculptures"],
+            year_built: "1003-1010 CE",
+            patron: "Raja Raja Chola I",
+            materials: "Granite (60km transport)",
+            significance: "Engineering marvel and pinnacle of Chola architectural achievement"
         }
     ];
 
@@ -59,12 +95,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchSection = document.getElementById('search-section');
     // const sitesContainer = document.getElementById('sites-container'); // Should be already defined
     const mapViewSection = document.getElementById('map-view-section'); // Defined in a previous step
+    const aboutSection = document.getElementById('about-section');
+    const gallerySection = document.getElementById('gallery-section');
 
     let navHomeLink = null;
+    let navAboutLink = null;
     let navMapViewLink = null;
+    let navGalleryLink = null;
 
     if (navLinks.length > 0) navHomeLink = navLinks[0]; // Assuming Home is the first link
+    if (navLinks.length > 1) navAboutLink = navLinks[1]; // Assuming About is the second link
     if (navLinks.length > 2) navMapViewLink = navLinks[2]; // Assuming Map View is the third link (index 2)
+    if (navLinks.length > 3) navGalleryLink = navLinks[3]; // Assuming Gallery is the fourth link (index 3)
 
 
     // Array of modal elements to animate
@@ -236,12 +278,59 @@ document.addEventListener('DOMContentLoaded', () => {
         modalSiteImage.src = site.image_url;
 
         let fullDescription = site.long_description;
+        
+        // Add specific sites/locations
         if (site.specific_sites && site.specific_sites.length > 0) {
             fullDescription += `<br><br><strong>Key Locations:</strong><ul>${site.specific_sites.map(ss => `<li>${ss}</li>`).join('')}</ul>`;
         }
+        
+        // Add key structures
         if (site.key_structures && site.key_structures.length > 0) {
             fullDescription += `<br><br><strong>Key Structures:</strong><ul>${site.key_structures.map(ks => `<li>${ks}</li>`).join('')}</ul>`;
         }
+        
+        // Add key features (for railway)
+        if (site.key_features && site.key_features.length > 0) {
+            fullDescription += `<br><br><strong>Key Features:</strong><ul>${site.key_features.map(kf => `<li>${kf}</li>`).join('')}</ul>`;
+        }
+        
+        // Add biodiversity info (for Western Ghats)
+        if (site.biodiversity && site.biodiversity.length > 0) {
+            fullDescription += `<br><br><strong>Biodiversity Highlights:</strong><ul>${site.biodiversity.map(bio => `<li>${bio}</li>`).join('')}</ul>`;
+        }
+        
+        // Add key species (for national parks)
+        if (site.key_species && site.key_species.length > 0) {
+            fullDescription += `<br><br><strong>Key Species:</strong><ul>${site.key_species.map(species => `<li>${species}</li>`).join('')}</ul>`;
+        }
+        
+        // Add architectural features
+        if (site.architectural_features && site.architectural_features.length > 0) {
+            fullDescription += `<br><br><strong>Architectural Features:</strong><ul>${site.architectural_features.map(feature => `<li>${feature}</li>`).join('')}</ul>`;
+        }
+        
+        // Add historical information
+        let historicalInfo = '';
+        if (site.year_built) historicalInfo += `<strong>Built:</strong> ${site.year_built}<br>`;
+        if (site.year_established) historicalInfo += `<strong>Established:</strong> ${site.year_established}<br>`;
+        if (site.dynasty) historicalInfo += `<strong>Dynasty:</strong> ${site.dynasty}<br>`;
+        if (site.patron) historicalInfo += `<strong>Patron:</strong> ${site.patron}<br>`;
+        if (site.engineer) historicalInfo += `<strong>Engineer:</strong> ${site.engineer}<br>`;
+        if (site.architectural_style) historicalInfo += `<strong>Style:</strong> ${site.architectural_style}<br>`;
+        if (site.area) historicalInfo += `<strong>Area:</strong> ${site.area}<br>`;
+        if (site.elevation_range) historicalInfo += `<strong>Elevation:</strong> ${site.elevation_range}<br>`;
+        if (site.gauge) historicalInfo += `<strong>Gauge:</strong> ${site.gauge}<br>`;
+        if (site.materials) historicalInfo += `<strong>Materials:</strong> ${site.materials}<br>`;
+        
+        if (historicalInfo) {
+            fullDescription += `<br><br><strong>Historical Details:</strong><br>${historicalInfo}`;
+        }
+        
+        // Add significance
+        if (site.significance) {
+            fullDescription += `<br><strong>Significance:</strong> ${site.significance}`;
+        }
+        
         modalLongDesc.innerHTML = fullDescription; // Use innerHTML for lists
 
         modalLocation.textContent = `Coordinates: ${site.coordinates}`;
@@ -415,7 +504,22 @@ document.addEventListener('DOMContentLoaded', () => {
             if (searchSection) searchSection.classList.remove('hidden');
             if (sitesContainer) sitesContainer.classList.remove('hidden');
             if (mapViewSection) mapViewSection.classList.add('hidden');
+            if (aboutSection) aboutSection.classList.add('hidden');
+            if (gallerySection) gallerySection.classList.add('hidden');
             setActiveLink(navHomeLink);
+        });
+    }
+
+    if (navAboutLink) {
+        navAboutLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (introductionSection) introductionSection.classList.add('hidden');
+            if (searchSection) searchSection.classList.add('hidden');
+            if (sitesContainer) sitesContainer.classList.add('hidden');
+            if (mapViewSection) mapViewSection.classList.add('hidden');
+            if (aboutSection) aboutSection.classList.remove('hidden');
+            if (gallerySection) gallerySection.classList.add('hidden');
+            setActiveLink(navAboutLink);
         });
     }
 
@@ -425,6 +529,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (introductionSection) introductionSection.classList.add('hidden');
             if (searchSection) searchSection.classList.add('hidden');
             if (sitesContainer) sitesContainer.classList.add('hidden');
+            if (aboutSection) aboutSection.classList.add('hidden');
+            if (gallerySection) gallerySection.classList.add('hidden');
 
             if (mapViewSection) mapViewSection.classList.remove('hidden');
 
@@ -435,6 +541,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 }, 10);
             }
             setActiveLink(navMapViewLink);
+        });
+    }
+
+    if (navGalleryLink) {
+        navGalleryLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (introductionSection) introductionSection.classList.add('hidden');
+            if (searchSection) searchSection.classList.add('hidden');
+            if (sitesContainer) sitesContainer.classList.add('hidden');
+            if (aboutSection) aboutSection.classList.add('hidden');
+            if (mapViewSection) mapViewSection.classList.add('hidden');
+
+            if (gallerySection) gallerySection.classList.remove('hidden');
+            
+            setActiveLink(navGalleryLink);
         });
     }
 
@@ -539,6 +660,41 @@ document.addEventListener('DOMContentLoaded', () => {
             }, index * 150); // 150ms stagger
         }
     });
+
+    // Gallery filter functionality
+    function initializeGalleryFilters() {
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const galleryItems = document.querySelectorAll('.gallery-item');
+
+        filterButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // Remove active class from all buttons
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                // Add active class to clicked button
+                button.classList.add('active');
+
+                const filterValue = button.dataset.filter;
+
+                galleryItems.forEach(item => {
+                    if (filterValue === 'all' || item.dataset.site === filterValue) {
+                        item.classList.remove('filtered-out');
+                        // Add animation for showing items
+                        setTimeout(() => {
+                            item.style.opacity = '1';
+                            item.style.transform = 'scale(1)';
+                        }, 100);
+                    } else {
+                        item.classList.add('filtered-out');
+                        item.style.opacity = '0';
+                        item.style.transform = 'scale(0.8)';
+                    }
+                });
+            });
+        });
+    }
+
+    // Initialize gallery filters when the page loads
+    initializeGalleryFilters();
 
     if (navHomeLink) {
         setActiveLink(navHomeLink);
