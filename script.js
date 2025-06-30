@@ -11,7 +11,10 @@ document.addEventListener('DOMContentLoaded', () => {
             year_built: "1003-1173 CE",
             dynasty: "Chola Empire",
             architectural_style: "Dravidian",
-            significance: "Represents the zenith of Chola architectural achievement and living temple traditions"
+            significance: "Represents the zenith of Chola architectural achievement and living temple traditions",
+            reviews: [],
+            averageRating: 0,
+            numberOfRatings: 0
         },
         {
             id: 2,
@@ -24,7 +27,10 @@ document.addEventListener('DOMContentLoaded', () => {
             year_built: "630-728 CE",
             dynasty: "Pallava Dynasty",
             architectural_style: "Early Dravidian",
-            significance: "Represents the birth of Dravidian architecture and contains the world's largest bas-relief"
+            significance: "Represents the birth of Dravidian architecture and contains the world's largest bas-relief",
+            reviews: [],
+            averageRating: 0,
+            numberOfRatings: 0
         },
         {
             id: 3,
@@ -37,7 +43,10 @@ document.addEventListener('DOMContentLoaded', () => {
             year_built: "1908",
             engineer: "British Colonial Government",
             gauge: "Metre gauge (1000mm)",
-            significance: "Outstanding example of hill railway engineering and colonial transportation heritage"
+            significance: "Outstanding example of hill railway engineering and colonial transportation heritage",
+            reviews: [],
+            averageRating: 0,
+            numberOfRatings: 0
         },
         {
             id: 4,
@@ -50,7 +59,10 @@ document.addEventListener('DOMContentLoaded', () => {
             year_established: "1988",
             area: "895 sq km",
             elevation_range: "100m - 1,868m",
-            significance: "Critical biodiversity conservation area and endemic species habitat"
+            significance: "Critical biodiversity conservation area and endemic species habitat",
+            reviews: [],
+            averageRating: 0,
+            numberOfRatings: 0
         },
         {
             id: 5,
@@ -63,7 +75,10 @@ document.addEventListener('DOMContentLoaded', () => {
             year_established: "1982",
             area: "78.46 sq km",
             elevation_range: "1,200m - 2,554m",
-            significance: "Critical habitat for endangered Nilgiri Tahr and montane ecosystem conservation"
+            significance: "Critical habitat for endangered Nilgiri Tahr and montane ecosystem conservation",
+            reviews: [],
+            averageRating: 0,
+            numberOfRatings: 0
         },
         {
             id: 6,
@@ -76,7 +91,10 @@ document.addEventListener('DOMContentLoaded', () => {
             year_built: "1003-1010 CE",
             patron: "Raja Raja Chola I",
             materials: "Granite (60km transport)",
-            significance: "Engineering marvel and pinnacle of Chola architectural achievement"
+            significance: "Engineering marvel and pinnacle of Chola architectural achievement",
+            reviews: [],
+            averageRating: 0,
+            numberOfRatings: 0
         }
     ];
 
@@ -111,6 +129,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Array of modal elements to animate
     const animatedModalElements = [modalSiteName, modalSiteImage, modalLongDesc, modalLocation];
+
+    // Load ratings from localStorage into heritageSitesData
+    heritageSitesData.forEach(site => {
+        const storedRating = getRatingFromStorage(site.id);
+        site.averageRating = storedRating.averageRating;
+        site.numberOfRatings = storedRating.numberOfRatings;
+        // We are not pre-loading site.reviews here to save memory;
+        // reviews are loaded on demand when the modal opens.
+    });
 
     let mapInstance = null;
     let lastFocusedElement; // To store the element that opened the modal
@@ -151,9 +178,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 <img data-src="${site.image_url}" alt="${site.name}" class="lazy-load">
                 <h2>${site.name}</h2>
                 <p class="short-desc">${site.short_description}</p>
+                <div class="star-rating" id="rating-${site.id}"></div>
                 <button class="learn-more" data-id="${site.id}">Learn More</button>
             `;
             sitesContainer.appendChild(siteCard);
+
+            // Display the average rating for the card
+            displayAverageRating(site.id, site.averageRating, site.numberOfRatings);
 
             // Staggered appearance
             setTimeout(() => {
@@ -335,8 +366,60 @@ document.addEventListener('DOMContentLoaded', () => {
 
         modalLocation.textContent = `Coordinates: ${site.coordinates}`;
 
+        // Remove existing review sections if they exist to prevent duplication
+        const existingAvgRating = modalContent.querySelector('.average-rating-modal');
+        if (existingAvgRating) existingAvgRating.remove();
+        const existingReviewsList = modalContent.querySelector('.reviews-list');
+        if (existingReviewsList) existingReviewsList.remove();
+        const existingReviewForm = modalContent.querySelector('.review-form-container');
+        if (existingReviewForm) existingReviewForm.remove();
+
+        // Average Rating Display
+        const avgRatingDiv = document.createElement('div');
+        avgRatingDiv.className = 'average-rating-modal';
+        avgRatingDiv.id = `modal-avg-rating-${site.id}`;
+        avgRatingDiv.textContent = 'No ratings yet'; // This will be updated later
+        modalContent.appendChild(avgRatingDiv);
+
+        // Reviews List
+        const reviewsListDiv = document.createElement('div');
+        reviewsListDiv.className = 'reviews-list';
+        reviewsListDiv.id = `modal-reviews-list-${site.id}`;
+        reviewsListDiv.innerHTML = '<h3>User Reviews</h3><ul></ul>'; // List items will be added here
+        modalContent.appendChild(reviewsListDiv);
+
+        // Review Submission Form
+        const reviewFormContainer = document.createElement('div');
+        reviewFormContainer.className = 'review-form-container';
+        reviewFormContainer.innerHTML = `
+            <h3>Leave a Review</h3>
+            <form id="review-form-${site.id}">
+                <div class="rating-input">
+                    <label for="rating-stars-${site.id}">Rating:</label>
+                    <select id="rating-stars-${site.id}" name="rating">
+                        <option value="5">5 Stars</option>
+                        <option value="4">4 Stars</option>
+                        <option value="3">3 Stars</option>
+                        <option value="2">2 Stars</option>
+                        <option value="1">1 Star</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="review-text-${site.id}">Review:</label>
+                    <textarea id="review-text-${site.id}" name="reviewText" rows="4" required></textarea>
+                </div>
+                <button type="submit">Submit Review</button>
+            </form>
+        `;
+        modalContent.appendChild(reviewFormContainer);
+
         // Prepare elements for animation
-        animatedModalElements.forEach(el => {
+        // Add new elements to animatedModalElements if they should also be animated
+        const newAnimatedElements = [avgRatingDiv, reviewsListDiv, reviewFormContainer];
+        const currentAnimatedElements = [modalSiteName, modalSiteImage, modalLongDesc, modalLocation, ...newAnimatedElements];
+
+
+        currentAnimatedElements.forEach(el => {
             el.classList.add('modal-element-animate');
             el.classList.remove('modal-element-visible'); // Ensure it's hidden before animation
         });
@@ -344,11 +427,39 @@ document.addEventListener('DOMContentLoaded', () => {
         siteDetailModal.classList.remove('hidden'); // This triggers modal container transition (opacity for overlay)
 
         // After a short delay for the modal container to become visible, trigger element animations
-        animatedModalElements.forEach((el, index) => {
+        currentAnimatedElements.forEach((el, index) => {
             setTimeout(() => {
                 el.classList.add('modal-element-visible');
             }, 100 + index * 50); // Start after 100ms, then stagger by 50ms
         });
+
+        // Attach event listener to the new review form
+        const reviewForm = document.getElementById(`review-form-${site.id}`);
+        if (reviewForm) {
+            reviewForm.addEventListener('submit', (event) => {
+                event.preventDefault();
+                const ratingSelect = document.getElementById(`rating-stars-${site.id}`);
+                const reviewTextarea = document.getElementById(`review-text-${site.id}`);
+
+                const ratingValue = parseInt(ratingSelect.value, 10);
+                const reviewTextValue = reviewTextarea.value.trim();
+
+                if (reviewTextValue) { // Basic validation: review text should not be empty
+                    handleReviewSubmission(site.id, ratingValue, reviewTextValue);
+                    // Optionally clear form
+                    ratingSelect.value = "5"; // Reset to default
+                    reviewTextarea.value = '';
+                } else {
+                    // Handle empty review text case, e.g., show an error message
+                    alert("Please write a review before submitting.");
+                }
+            });
+        }
+
+        // Load and display existing ratings and reviews
+        const storedRatingData = getRatingFromStorage(site.id);
+        displayAverageRating(site.id, storedRatingData.averageRating, storedRatingData.numberOfRatings);
+        displayReviewsInModal(site.id);
 
         // Focus on the close button first or the modal title
         closeModalButton.focus(); // Or modalSiteName if preferred
@@ -375,7 +486,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Reset elements for next time modal opens
-        animatedModalElements.forEach(el => {
+        currentAnimatedElements.forEach(el => {
             el.classList.remove('modal-element-animate', 'modal-element-visible');
         });
 
@@ -486,6 +597,129 @@ document.addEventListener('DOMContentLoaded', () => {
                 mapInstance.invalidateSize();
             }, 0);
         });
+    }
+
+    // --- Review and Rating Functions ---
+
+    function getReviewsFromStorage(siteId) {
+        const reviewsJSON = localStorage.getItem(`reviews-${siteId}`);
+        try {
+            return reviewsJSON ? JSON.parse(reviewsJSON) : [];
+        } catch (e) {
+            console.error("Error parsing reviews from localStorage:", e);
+            return [];
+        }
+    }
+
+    function saveReviewToStorage(siteId, reviewData) {
+        let reviews = getReviewsFromStorage(siteId);
+        reviews.push(reviewData);
+        localStorage.setItem(`reviews-${siteId}`, JSON.stringify(reviews));
+    }
+
+    function getRatingFromStorage(siteId) {
+        const ratingJSON = localStorage.getItem(`rating-${siteId}`);
+        try {
+            return ratingJSON ? JSON.parse(ratingJSON) : { averageRating: 0, numberOfRatings: 0 };
+        } catch (e) {
+            console.error("Error parsing rating from localStorage:", e);
+            return { averageRating: 0, numberOfRatings: 0 };
+        }
+    }
+
+    function saveRatingToStorage(siteId, ratingData) {
+        localStorage.setItem(`rating-${siteId}`, JSON.stringify(ratingData));
+    }
+
+    function handleReviewSubmission(siteId, rating, reviewText) {
+        const reviewData = {
+            rating: rating,
+            text: reviewText,
+            timestamp: new Date().toISOString()
+        };
+        saveReviewToStorage(siteId, reviewData);
+
+        const allReviews = getReviewsFromStorage(siteId);
+        const numberOfRatings = allReviews.length;
+        let sumOfRatings = 0;
+        allReviews.forEach(review => {
+            sumOfRatings += review.rating;
+        });
+
+        const averageRating = numberOfRatings > 0 ? (sumOfRatings / numberOfRatings) : 0;
+
+        saveRatingToStorage(siteId, { averageRating: parseFloat(averageRating.toFixed(1)), numberOfRatings });
+
+
+        saveRatingToStorage(siteId, { averageRating: parseFloat(averageRating.toFixed(1)), numberOfRatings });
+
+        // Update the display
+        displayAverageRating(siteId, parseFloat(averageRating.toFixed(1)), numberOfRatings);
+        displayReviewsInModal(siteId);
+
+        // For now, let's log to console to verify
+        console.log(`Review submitted for site ${siteId}: Rating: ${rating}, Text: ${reviewText}`);
+        console.log(`Updated rating for site ${siteId}: Avg: ${averageRating.toFixed(1)}, Total: ${numberOfRatings}`);
+    }
+
+
+    function displayAverageRating(siteId, averageRating, numberOfRatings) {
+        let starsHTML = '';
+        const roundedRating = Math.round(averageRating * 2) / 2; // Round to nearest 0.5
+
+        for (let i = 1; i <= 5; i++) {
+            if (i <= roundedRating) {
+                starsHTML += '★'; // Filled star
+            } else if (i - 0.5 === roundedRating) {
+                starsHTML += '½'; // Half star - you might need a specific character or SVG for this
+                                 // For simplicity, some might prefer to round to full stars or use CSS for half stars
+                                 // Using text '½' might not align well with '★' and '☆'.
+                                 // Alternative: use two '★' and color one half with CSS, or use SVG icons.
+                                 // Sticking to text characters as per example for now.
+            } else {
+                starsHTML += '☆'; // Empty star
+            }
+        }
+
+        const ratingText = numberOfRatings > 0
+            ? `${starsHTML} (${averageRating.toFixed(1)} from ${numberOfRatings} rating${numberOfRatings === 1 ? '' : 's'})`
+            : 'No ratings yet';
+
+        // Update Card Display
+        const cardRatingDiv = document.getElementById(`rating-${siteId}`);
+        if (cardRatingDiv) {
+            cardRatingDiv.innerHTML = ratingText;
+        }
+
+        // Update Modal Display
+        const modalAvgRatingDiv = document.getElementById(`modal-avg-rating-${siteId}`);
+        if (modalAvgRatingDiv) {
+            modalAvgRatingDiv.innerHTML = ratingText;
+        }
+    }
+
+    function displayReviewsInModal(siteId) {
+        const reviews = getReviewsFromStorage(siteId);
+        const ulElement = document.querySelector(`#modal-reviews-list-${siteId} ul`);
+
+        if (!ulElement) return;
+        ulElement.innerHTML = ''; // Clear existing reviews
+
+        if (reviews.length > 0) {
+            reviews.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)); // Sort by newest first
+            reviews.forEach(review => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <div class="review-item">
+                        <div class="review-rating"><strong>${review.rating}/5 Stars</strong></div>
+                        <p class="review-text">${review.text}</p>
+                        <small class="review-timestamp">Reviewed on: ${new Date(review.timestamp).toLocaleDateString()} at ${new Date(review.timestamp).toLocaleTimeString()}</small>
+                    </div>`;
+                ulElement.appendChild(li);
+            });
+        } else {
+            ulElement.innerHTML = '<li>No reviews yet. Be the first to review!</li>';
+        }
     }
 
     // Event Listeners

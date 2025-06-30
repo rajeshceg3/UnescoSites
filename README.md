@@ -11,6 +11,7 @@ An interactive web application showcasing the UNESCO World Heritage sites in Tam
 *   **Image Lazy Loading:** Implements lazy loading for images to optimize initial page load time and improve performance.
 *   **Responsive Design:** The application is designed to be responsive and accessible on various devices, including desktops, tablets, and mobile phones. (Note: This is based on common web development practices; thorough testing across multiple devices is recommended.)
 *   **User-Friendly Navigation:** Simple navigation to switch between home view (site listings) and map view.
+*   **User Reviews and Ratings:** Allows users to submit star ratings and textual reviews for each heritage site. Average ratings are displayed on site cards and in detail views. Reviews are stored using browser `localStorage`, meaning they are personal to the user's browser and not shared publicly.
 
 ## Getting Started
 
@@ -72,6 +73,7 @@ Once the project is running, you can:
 *   **Search for Sites:** Use the search bar at the top of the page to type in keywords (e.g., "Chola", "temple", "railway"). The list of sites will dynamically filter to show matching results.
 *   **Explore Map View:** Click on the "Map View" link in the navigation bar. This will display an interactive map with markers indicating the locations of the heritage sites. Click on any marker to see a brief info pop-up with a "Learn More" button that links to the detailed modal.
 *   **Navigate:** Use the "Home" and "Map View" links to switch between the site listing and the map.
+*   **Submit and View Reviews:** In the site detail modal, users can submit their own star rating and written review. Previously submitted reviews (by the same user in the same browser) and the site's average rating are also displayed here.
 
 ## Bug Scanning and Fixing
 
@@ -84,6 +86,12 @@ To ensure the application works correctly and to identify potential issues:
 *   **Search Functionality:** Test the search with various terms, including partial matches, full names, and keywords from descriptions. Ensure "No results" messages appear when appropriate.
 *   **Map Interaction:** Confirm that the map loads, markers are placed correctly, and pop-ups on markers function as expected.
 *   **Modal Functionality:** Ensure that the "Learn More" modals open with the correct information, display correctly, and can be closed easily (via the close button or by clicking the overlay).
+*   **User Reviews and Ratings:**
+    *   Test submitting a new review and rating.
+    *   Verify that the review appears in the modal.
+    *   Verify that the average rating updates correctly on the site card and in the modal.
+    *   Close and reopen the modal, or refresh the page, to ensure reviews and ratings persist via `localStorage`.
+    *   Test submitting multiple reviews for the same site and for different sites.
 *   **Responsiveness:** Test the application on different screen sizes (desktop, tablet, mobile) to check for layout issues or broken functionality. Browser developer tools can simulate different devices.
 *   **Browser Compatibility:** Test on different web browsers (Chrome, Firefox, Safari, Edge) to catch browser-specific issues.
 *   **Console Errors:** Open the browser's developer tools (usually by pressing F12) and check the console for any JavaScript errors or failed network requests.
