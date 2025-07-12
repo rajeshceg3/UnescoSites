@@ -111,8 +111,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const navLinks = document.querySelectorAll('nav ul li a');
     const introductionSection = document.getElementById('introduction');
     const searchSection = document.getElementById('search-section');
-    // const sitesContainer = document.getElementById('sites-container'); // Should be already defined
-    const mapViewSection = document.getElementById('map-view-section'); // Defined in a previous step
+    // sitesContainer is already defined in the outer scope
+    // mapViewSection is already defined in the outer scope
     const aboutSection = document.getElementById('about-section');
     const gallerySection = document.getElementById('gallery-section');
 
@@ -129,6 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Array of modal elements to animate
     const animatedModalElements = [modalSiteName, modalSiteImage, modalLongDesc, modalLocation];
+    let currentAnimatedElements = []; // Declare here for wider access by openModal and closeModal
 
     // Load ratings from localStorage into heritageSitesData
     heritageSitesData.forEach(site => {
@@ -243,11 +244,26 @@ document.addEventListener('DOMContentLoaded', () => {
     function trapFocus(event) {
         if (event.key !== 'Tab') return;
 
-        const focusableModalElements = Array.from(modalContent.querySelectorAll(
-            'button.close-modal' // Only inherently interactive elements like buttons
-        )).filter(el => el.offsetParent !== null); // Filter for visible elements
+        // More comprehensive selector for focusable elements
+        const focusableElementsString = 'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
+        let focusableModalElements = Array.from(
+            modalContent.querySelectorAll(focusableElementsString)
+        ).filter(el => el.offsetParent !== null); // Filter for visible elements
 
-        if (focusableModalElements.length === 0) return;
+        // If the review form elements are dynamically added, ensure they are included.
+        // The current implementation dynamically adds review form, so querySelectorAll on modalContent should find them.
+
+        if (focusableModalElements.length === 0) {
+            // If no focusable elements (e.g. modal content is just text),
+            // prevent tabbing out of the modal content area by focusing the modal itself or its first child.
+            // This might be too aggressive if there are truly no interactive elements.
+            // For now, if this case is hit, it means the modal is not properly interactive.
+            // A simple return might be fine, or focusing the modalContent itself if it has tabindex="0"
+            return;
+        }
+
+        // If focusableModalElements includes elements outside the desired trap area (e.g. if modalContent is not the top container)
+        // one might need to verify parentage. But here modalContent is the direct container.
 
         const firstFocusableElement = focusableModalElements[0];
         const lastFocusableElement = focusableModalElements[focusableModalElements.length - 1];
@@ -416,10 +432,11 @@ document.addEventListener('DOMContentLoaded', () => {
         // Prepare elements for animation
         // Add new elements to animatedModalElements if they should also be animated
         const newAnimatedElements = [avgRatingDiv, reviewsListDiv, reviewFormContainer];
-        const currentAnimatedElements = [modalSiteName, modalSiteImage, modalLongDesc, modalLocation, ...newAnimatedElements];
+        // Assign to the higher-scoped variable:
+        currentAnimatedElements = [modalSiteName, modalSiteImage, modalLongDesc, modalLocation, ...newAnimatedElements];
 
 
-        currentAnimatedElements.forEach(el => {
+        currentAnimatedElements.forEach(el => { // Use the higher-scoped variable
             el.classList.add('modal-element-animate');
             el.classList.remove('modal-element-visible'); // Ensure it's hidden before animation
         });
@@ -427,7 +444,7 @@ document.addEventListener('DOMContentLoaded', () => {
         siteDetailModal.classList.remove('hidden'); // This triggers modal container transition (opacity for overlay)
 
         // After a short delay for the modal container to become visible, trigger element animations
-        currentAnimatedElements.forEach((el, index) => {
+        currentAnimatedElements.forEach((el, index) => { // Use the higher-scoped variable
             setTimeout(() => {
                 el.classList.add('modal-element-visible');
             }, 100 + index * 50); // Start after 100ms, then stagger by 50ms
@@ -486,9 +503,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Reset elements for next time modal opens
-        currentAnimatedElements.forEach(el => {
-            el.classList.remove('modal-element-animate', 'modal-element-visible');
-        });
+        // currentAnimatedElements is now accessible from the higher scope
+        if (currentAnimatedElements && currentAnimatedElements.length > 0) { // Check if it has been populated
+            currentAnimatedElements.forEach(el => {
+                if (el) { // Add a check for el in case the array was modified unexpectedly
+                    el.classList.remove('modal-element-animate', 'modal-element-visible');
+                }
+            });
+        }
 
         // Remove tabindex from elements that were made focusable
 
@@ -526,66 +548,16 @@ document.addEventListener('DOMContentLoaded', () => {
         // Add markers for each heritage site
         heritageSitesData.forEach(site => {
             if (site.coordinates) {
-                // Assuming coordinates are in "Ndd mm ss Edd mm ss" or similar format.
-                // Need to parse these into [latitude, longitude]
-                const coordsString = site.coordinates;
-                let lat = null;
-                let lon = null;
-
-                // Basic parsing for "NXX XX XX EXX XX XX" or "NXX.XXXX EXX.XXXX"
-                // This is a simplified parser and might need adjustment based on exact format variability.
-                const parts = coordsString.match(/[+-]?([0-9]*[.])?[0-9]+/g);
-
-                if (coordsString.includes('N') && coordsString.includes('E')) {
-                    // Example: "N10 46 59 E79 7 57" or "N10.78305 E79.1325"
-                    // This will attempt to convert DMS to DD if multiple parts are found for lat/lon,
-                    // or use decimal if single part is found.
-                    const latParts = [];
-                    const lonParts = [];
-                    let foundE = false;
-                    for(let i=0; i < parts.length; i++) {
-                        if(coordsString.substring(coordsString.indexOf(parts[i])-1, coordsString.indexOf(parts[i])).match(/[NE]/i) && i > 0) {
-                             if(coordsString.substring(coordsString.indexOf(parts[i])-1, coordsString.indexOf(parts[i])).match(/[E]/i)) foundE = true;
-                        }
-                        if(!foundE) latParts.push(parseFloat(parts[i]));
-                        else lonParts.push(parseFloat(parts[i]));
-                    }
-
-                    if (latParts.length === 3) { // Assuming Degrees, Minutes, Seconds
-                        lat = latParts[0] + latParts[1]/60 + latParts[2]/3600;
-                    } else if (latParts.length === 1) { // Assuming Decimal Degrees
-                        lat = latParts[0];
-                    }
-
-                    if (lonParts.length === 3) { // Assuming Degrees, Minutes, Seconds
-                        lon = lonParts[0] + lonParts[1]/60 + lonParts[2]/3600;
-                    } else if (lonParts.length === 1) { // Assuming Decimal Degrees
-                        lon = lonParts[0];
-                    }
-
-                     // Sign correction based on N/S/E/W if not already handled by parts matching negation
-                    if (coordsString.includes('S') && lat > 0) lat *= -1;
-                    if (coordsString.includes('W') && lon > 0) lon *= -1;
-
-
-                } else {
-                    // Fallback for simpler "lat, lon" string or if N/E parsing is tricky.
-                    // This part might need robust error handling or clearer data format.
-                    console.warn(`Coordinates for ${site.name} are in an unrecognized format: ${coordsString}`);
-                    // Attempt a simple split if it's comma separated decimal
-                     if(parts && parts.length === 2){
-                        lat = parseFloat(parts[0]);
-                        lon = parseFloat(parts[1]);
-                    } else {
-                        return; // Skip this site if coordinates can't be parsed
-                    }
-                }
+                const { lat, lon } = parseCoordinates(site.coordinates); // Use the new parser
 
                 if (lat !== null && lon !== null && !isNaN(lat) && !isNaN(lon)) {
                     const marker = L.marker([lat, lon]).addTo(mapInstance);
                     marker.bindPopup(`<b>${site.name}</b><br><button class="map-learn-more" data-id="${site.id}">Learn More</button>`);
                 } else {
-                    console.warn(`Could not parse coordinates for ${site.name}: ${coordsString}`);
+                    // Warning already logged by parseCoordinates if parsing failed.
+                    // If site.coordinates was valid but parseCoordinates returned nulls for some other reason,
+                    // an additional log here could be useful, but parseCoordinates should be comprehensive.
+                    // console.warn(`Could not use coordinates for ${site.name}: ${site.coordinates}`); // Example
                 }
             }
         });
@@ -597,6 +569,67 @@ document.addEventListener('DOMContentLoaded', () => {
                 mapInstance.invalidateSize();
             }, 0);
         });
+    }
+
+    function parseCoordinates(coordString) {
+        let lat = null, lon = null;
+
+        // Try to parse DMS format: Ndd mm ss.sss Edd mm ss.sss
+        // Regex captures: Hemisphere (N/S), Deg, Min, Sec, Hemisphere (E/W), Deg, Min, Sec
+        const dmsRegex = /([NS])\s*(\d{1,3})\s*(\d{1,2})\s*([\d.]+)\s*([EW])\s*(\d{1,3})\s*(\d{1,2})\s*([\d.]+)/i;
+        const dmsMatch = coordString.match(dmsRegex);
+
+        if (dmsMatch) {
+            const latHemi = dmsMatch[1].toUpperCase();
+            const latDeg = parseFloat(dmsMatch[2]);
+            const latMin = parseFloat(dmsMatch[3]);
+            const latSec = parseFloat(dmsMatch[4]);
+
+            const lonHemi = dmsMatch[5].toUpperCase();
+            const lonDeg = parseFloat(dmsMatch[6]);
+            const lonMin = parseFloat(dmsMatch[7]);
+            const lonSec = parseFloat(dmsMatch[8]);
+
+            lat = latDeg + (latMin / 60) + (latSec / 3600);
+            if (latHemi === 'S') lat *= -1;
+
+            lon = lonDeg + (lonMin / 60) + (lonSec / 3600);
+            if (lonHemi === 'W') lon *= -1;
+
+            return { lat, lon };
+        }
+
+        // Try to parse Decimal Degrees format: Ndd.dddd Edd.dddd (or similar with S/W)
+        // Regex captures: Hemisphere (N/S), DecimalDegrees, Hemisphere (E/W), DecimalDegrees
+        const ddRegex = /([NS])\s*([\d.]+)\s*([EW])\s*([\d.]+)/i;
+        const ddMatch = coordString.match(ddRegex);
+
+        if (ddMatch) {
+            const latHemi = ddMatch[1].toUpperCase();
+            lat = parseFloat(ddMatch[2]);
+            if (latHemi === 'S') lat *= -1;
+
+            const lonHemi = ddMatch[3].toUpperCase();
+            lon = parseFloat(ddMatch[4]);
+            if (lonHemi === 'W') lon *= -1;
+
+            return { lat, lon };
+        }
+
+        // Fallback for simple "lat, lon" or "lat lon" (numbers possibly signed)
+        const simpleParts = coordString.match(/[+-]?[\d.]+/g);
+        if (simpleParts && simpleParts.length === 2) {
+            lat = parseFloat(simpleParts[0]);
+            lon = parseFloat(simpleParts[1]);
+            if (!isNaN(lat) && !isNaN(lon)) {
+                 // Heuristic: if values are typical for India, assume positive N/E
+                // This is a weak fallback.
+                return { lat, lon };
+            }
+        }
+
+        console.warn(`Could not parse coordinates: ${coordString}`);
+        return { lat: null, lon: null }; // Explicitly return nulls
     }
 
     // --- Review and Rating Functions ---
@@ -614,7 +647,13 @@ document.addEventListener('DOMContentLoaded', () => {
     function saveReviewToStorage(siteId, reviewData) {
         let reviews = getReviewsFromStorage(siteId);
         reviews.push(reviewData);
-        localStorage.setItem(`reviews-${siteId}`, JSON.stringify(reviews));
+        try {
+            localStorage.setItem(`reviews-${siteId}`, JSON.stringify(reviews));
+        } catch (e) {
+            console.error("Error saving review to localStorage:", e);
+            // Optionally, inform the user here that their review could not be saved.
+            // For example: alert("Could not save your review. Local storage might be full or disabled.");
+        }
     }
 
     function getRatingFromStorage(siteId) {
@@ -628,7 +667,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function saveRatingToStorage(siteId, ratingData) {
-        localStorage.setItem(`rating-${siteId}`, JSON.stringify(ratingData));
+        try {
+            localStorage.setItem(`rating-${siteId}`, JSON.stringify(ratingData));
+        } catch (e) {
+            console.error("Error saving rating to localStorage:", e);
+            // Optionally, inform the user here that the rating could not be saved.
+        }
     }
 
     function handleReviewSubmission(siteId, rating, reviewText) {
@@ -650,8 +694,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         saveRatingToStorage(siteId, { averageRating: parseFloat(averageRating.toFixed(1)), numberOfRatings });
 
-
-        saveRatingToStorage(siteId, { averageRating: parseFloat(averageRating.toFixed(1)), numberOfRatings });
+        // The second call was redundant and has been removed.
 
         // Update the display
         displayAverageRating(siteId, parseFloat(averageRating.toFixed(1)), numberOfRatings);
@@ -830,7 +873,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (searchInput) {
         searchInput.addEventListener('input', () => {
             const searchTerm = searchInput.value.trim();
-            // const clearSearchButton = document.getElementById('clear-search-btn'); // Should be defined
+            // clearSearchButton is already defined in the outer scope
             if (clearSearchButton) {
                 if (searchTerm !== '') {
                     clearSearchButton.classList.remove('hidden');
