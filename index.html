@@ -9,45 +9,59 @@
 </head>
 <body>
     <header>
-        <h1>Discover Tamil Nadu's UNESCO Treasures</h1>
+        <div class="header-content">
+            <h1>UNESCO Heritage Sites in Tamil Nadu</h1>
+            <p class="subtitle">A Journey Through Time and Culture</p>
+        </div>
     </header>
-    <nav>
+    <nav id="main-nav">
         <ul>
-            <li><a href="#" class="active">Home</a></li>
-            <li><a href="#">About</a></li>
-            <li><a href="#">Map View</a></li>
-            <li><a href="#">Gallery</a></li>
+            <li><a href="#home" class="nav-link active" data-section="home-section">Home</a></li>
+            <li><a href="#timeline" class="nav-link" data-section="timeline-section">Timeline</a></li>
+            <li><a href="#map" class="nav-link" data-section="map-view-section">Map</a></li>
+            <li><a href="#gallery" class="nav-link" data-section="gallery-section">Gallery</a></li>
         </ul>
     </nav>
     <main>
-        <section id="introduction">
-            <p>Welcome to this interactive guide to the UNESCO World Heritage sites located in Tamil Nadu, India. Explore the rich cultural and historical significance of these incredible landmarks.</p>
+        <section id="home-section" class="content-section active">
+            <div id="hero-section">
+                <div class="hero-text">
+                    <h2>The Curator's Desk</h2>
+                    <p>Discover the stories behind Tamil Nadu's most treasured landmarks.</p>
+                </div>
+            </div>
+            <section id="introduction">
+                <p>Welcome to a curated exploration of the UNESCO World Heritage sites in Tamil Nadu. This digital space is designed to be an elegant and intuitive guide to the rich history, stunning art, and cultural significance of these timeless monuments.</p>
+            </section>
+            <section id="featured-site" class="hidden">
+                <h3>Featured Site</h3>
+                <div id="featured-site-content">
+                    </div>
+            </section>
+        <section id="timeline-section" class="content-section hidden">
+            <h2>Dynasties and Timelines</h2>
+            <div id="interactive-timeline">
+                </div>
         </section>
         <section id="search-section">
             <input type="text" id="search-input" placeholder="Search sites by name or keyword...">
             <button id="clear-search-btn" class="hidden" aria-label="Clear search input for heritage sites">✖</button>
         </section>
         <section id="sites-container">
-            <!-- Heritage sites will be dynamically loaded here by script.js -->
-            <div id="loading-spinner" class="loading-spinner-container">
-                <div class="spinner"></div>
-            </div>
-        </section>
-        <section id="site-detail-modal" class="hidden" role="dialog" aria-modal="true" aria-labelledby="modalSiteName">
-            <!-- Detailed information popup -->
+            </section>
+        <div id="site-detail-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modal-site-name">
+            <div class="modal-overlay" tabindex="-1" data-close-modal></div>
             <div class="modal-content">
-                <h2 id="modalSiteName">Site Name Detail</h2>
-                <img src="" alt="Site Image Detail">
-                <p class="long-desc">More detailed information about the site, its history, and significance will be displayed here.</p>
-                <p class="location">Location/Coordinates: To be filled</p>
-                <button class="close-modal">Close</button>
+                <button class="close-modal" aria-label="Close site details" data-close-modal> &times; </button>
+                <div id="modal-body">
+                </div>
             </div>
-        </section>
-        <section id="map-view-section" class="hidden">
+        </div>
+        <section id="map-view-section" class="content-section hidden">
             <h2>Interactive Map of Heritage Sites</h2>
             <div id="map-container"></div>
         </section>
-        <section id="about-section" class="hidden">
+        <section id="about-section" class="content-section hidden">
             <h2>About Tamil Nadu's UNESCO Heritage</h2>
             <div class="about-content">
                 <div class="heritage-overview">
@@ -100,7 +114,7 @@
                 </div>
             </div>
         </section>
-        <section id="gallery-section" class="hidden">
+        <section id="gallery-section" class="content-section hidden">
             <h2>Heritage Gallery</h2>
             <div class="gallery-content">
                 <p class="gallery-intro">Explore the magnificent architecture, natural beauty, and cultural heritage of Tamil Nadu's UNESCO World Heritage Sites through this curated collection of images.</p>
@@ -166,10 +180,11 @@
             </div>
         </section>
     </main>
+    </main>
     <footer>
-        <p>Data sourced from UNESCO. App created by Jules.</p>
+        <p>A Curated Digital Experience. Data sourced from UNESCO.</p>
     </footer>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="httpshttps://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="script.js"></script>
 </body>
 </html>
