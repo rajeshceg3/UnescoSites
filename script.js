@@ -14,7 +14,8 @@ document.addEventListener('DOMContentLoaded', () => {
             significance: "Represents the zenith of Chola architectural achievement and living temple traditions",
             reviews: [],
             averageRating: 0,
-            numberOfRatings: 0
+            numberOfRatings: 0,
+            site_type: 'temple'
         },
         {
             id: 2,
@@ -30,7 +31,8 @@ document.addEventListener('DOMContentLoaded', () => {
             significance: "Represents the birth of Dravidian architecture and contains the world's largest bas-relief",
             reviews: [],
             averageRating: 0,
-            numberOfRatings: 0
+            numberOfRatings: 0,
+            site_type: 'temple'
         },
         {
             id: 3,
@@ -46,7 +48,8 @@ document.addEventListener('DOMContentLoaded', () => {
             significance: "Outstanding example of hill railway engineering and colonial transportation heritage",
             reviews: [],
             averageRating: 0,
-            numberOfRatings: 0
+            numberOfRatings: 0,
+            site_type: 'railway'
         },
         {
             id: 4,
@@ -62,7 +65,8 @@ document.addEventListener('DOMContentLoaded', () => {
             significance: "Critical biodiversity conservation area and endemic species habitat",
             reviews: [],
             averageRating: 0,
-            numberOfRatings: 0
+            numberOfRatings: 0,
+            site_type: 'nature'
         },
         {
             id: 5,
@@ -78,7 +82,8 @@ document.addEventListener('DOMContentLoaded', () => {
             significance: "Critical habitat for endangered Nilgiri Tahr and montane ecosystem conservation",
             reviews: [],
             averageRating: 0,
-            numberOfRatings: 0
+            numberOfRatings: 0,
+            site_type: 'nature'
         },
         {
             id: 6,
@@ -94,7 +99,8 @@ document.addEventListener('DOMContentLoaded', () => {
             significance: "Engineering marvel and pinnacle of Chola architectural achievement",
             reviews: [],
             averageRating: 0,
-            numberOfRatings: 0
+            numberOfRatings: 0,
+            site_type: 'temple'
         }
     ];
 
@@ -110,6 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const timelineContainer = document.getElementById('interactive-timeline');
 
     let mapInstance = null;
+    let markers = {};
 
     function displaySites(sites) {
         sitesContainer.innerHTML = '';
@@ -121,6 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
         sites.forEach(site => {
             const siteCard = document.createElement('article');
             siteCard.className = 'site-card';
+            siteCard.dataset.siteId = site.id;
             siteCard.innerHTML = `
                 <img src="${site.image_url}" alt="${site.name}" loading="lazy">
                 <div class="card-content">
@@ -204,8 +212,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Prevent re-initialization if mapInstance already exists
         if (mapInstance) {
-            // Optional: Pan to default view if map is already initialized
-            // mapInstance.setView([10.7905, 78.7047], 7);
             return;
         }
 
@@ -213,11 +219,77 @@ document.addEventListener('DOMContentLoaded', () => {
         const tamilNaduCenter = [10.7905, 78.7047]; // Approximate center of Tamil Nadu
         const initialZoom = 7;
 
-        mapInstance = L.map('map-container').setView(tamilNaduCenter, initialZoom);
-
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(mapInstance);
+        });
+
+        const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+        });
+
+        const topoLayer = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+            attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
+        });
+
+        mapInstance = L.map('map-container', {
+            layers: [osmLayer] // Default layer
+        }).setView(tamilNaduCenter, initialZoom);
+
+        const layerSwitcher = document.getElementById('map-layer-switcher');
+        layerSwitcher.addEventListener('change', (e) => {
+            const selectedLayer = e.target.value;
+
+            // Remove all existing tile layers
+            mapInstance.eachLayer((layer) => {
+                if (layer instanceof L.TileLayer) {
+                    mapInstance.removeLayer(layer);
+                }
+            });
+
+            // Add the selected layer
+            switch (selectedLayer) {
+                case 'satellite':
+                    mapInstance.addLayer(satelliteLayer);
+                    break;
+                case 'topo':
+                    mapInstance.addLayer(topoLayer);
+                    break;
+                case 'osm':
+                default:
+                    mapInstance.addLayer(osmLayer);
+                    break;
+            }
+        });
+
+        const templeIcon = L.divIcon({
+            html: '<i class="fa-solid fa-gopuram" style="color: #C70039;"></i>',
+            className: 'map-marker-icon',
+            iconSize: [30, 30],
+            iconAnchor: [15, 30],
+            popupAnchor: [0, -30]
+        });
+
+        const railwayIcon = L.divIcon({
+            html: '<i class="fa-solid fa-train" style="color: #005A4B;"></i>',
+            className: 'map-marker-icon',
+            iconSize: [30, 30],
+            iconAnchor: [15, 30],
+            popupAnchor: [0, -30]
+        });
+
+        const natureIcon = L.divIcon({
+            html: '<i class="fa-solid fa-tree" style="color: #2E8B57;"></i>',
+            className: 'map-marker-icon',
+            iconSize: [30, 30],
+            iconAnchor: [15, 30],
+            popupAnchor: [0, -30]
+        });
+
+        const iconMap = {
+            temple: templeIcon,
+            railway: railwayIcon,
+            nature: natureIcon
+        };
 
         // Add markers for each heritage site
         heritageSitesData.forEach(site => {
@@ -225,24 +297,62 @@ document.addEventListener('DOMContentLoaded', () => {
                 const { lat, lon } = parseCoordinates(site.coordinates); // Use the new parser
 
                 if (lat !== null && lon !== null && !isNaN(lat) && !isNaN(lon)) {
-                    const marker = L.marker([lat, lon]).addTo(mapInstance);
-                    marker.bindPopup(`<b>${site.name}</b><br><button class="map-learn-more" data-id="${site.id}">Learn More</button>`);
-                } else {
-                    // Warning already logged by parseCoordinates if parsing failed.
-                    // If site.coordinates was valid but parseCoordinates returned nulls for some other reason,
-                    // an additional log here could be useful, but parseCoordinates should be comprehensive.
-                    // console.warn(`Could not use coordinates for ${site.name}: ${site.coordinates}`); // Example
+                    const customIcon = iconMap[site.site_type] || L.divIcon({ html: '<i class="fa-solid fa-landmark"></i>' }); // Default icon
+                    const marker = L.marker([lat, lon], { icon: customIcon }).addTo(mapInstance);
+                    markers[site.id] = marker;
+                    const popupContent = `
+                        <div class="map-popup">
+                            <img src="${site.image_url}" alt="${site.name}">
+                            <h3>${site.name}</h3>
+                            <p>${site.short_description}</p>
+                            <a href="#" class="learn-more" data-id="${site.id}">Learn More</a>
+                        </div>
+                    `;
+                    marker.bindPopup(popupContent);
+                    marker.on('click', () => {
+                        const siteCards = document.querySelectorAll('.site-card');
+                        siteCards.forEach(card => {
+                            card.classList.remove('highlight');
+                        });
+                        const correspondingCard = document.querySelector(`.site-card[data-site-id='${site.id}']`);
+                        if (correspondingCard) {
+                            correspondingCard.classList.add('highlight');
+                            correspondingCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                    });
                 }
             }
         });
 
         // Optional: Add a resize listener to invalidate map size if it was hidden when initialized
-        // This can be important if the map is initialized in a hidden div
         mapInstance.whenReady(() => {
             setTimeout(() => { // Use a timeout to ensure the container is visible and has dimensions
                 mapInstance.invalidateSize();
             }, 0);
         });
+
+        const legend = L.control({ position: 'bottomright' });
+
+        legend.onAdd = function (map) {
+            const div = L.DomUtil.create('div', 'info legend');
+            const grades = [
+                { type: 'temple', label: 'Temple', icon: '<i class="fa-solid fa-gopuram" style="color: #C70039;"></i>' },
+                { type: 'railway', label: 'Railway', icon: '<i class="fa-solid fa-train" style="color: #005A4B;"></i>' },
+                { type: 'nature', label: 'Nature', icon: '<i class="fa-solid fa-tree" style="color: #2E8B57;"></i>' }
+            ];
+            let labels = ['<h3>Legend</h3>'];
+
+            grades.forEach(grade => {
+                labels.push(
+                    `<div class="legend-item">${grade.icon}<span>${grade.label}</span></div>`
+                );
+            });
+
+            div.innerHTML = labels.join('');
+            return div;
+        };
+
+        legend.addTo(mapInstance);
     }
 
     function parseCoordinates(coordString) {
@@ -483,4 +593,26 @@ document.addEventListener('DOMContentLoaded', () => {
     displayFeaturedSite();
     renderTimeline();
     handleNavigation('home-section');
+
+    sitesContainer.addEventListener('mouseover', (e) => {
+        const card = e.target.closest('.site-card');
+        if (card) {
+            const siteId = card.dataset.siteId;
+            const marker = markers[siteId];
+            if (marker) {
+                marker.openPopup();
+            }
+        }
+    });
+
+    sitesContainer.addEventListener('mouseout', (e) => {
+        const card = e.target.closest('.site-card');
+        if (card) {
+            const siteId = card.dataset.siteId;
+            const marker = markers[siteId];
+            if (marker) {
+                marker.closePopup();
+            }
+        }
+    });
 });
