@@ -100,424 +100,98 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const sitesContainer = document.getElementById('sites-container');
     const siteDetailModal = document.getElementById('site-detail-modal');
-    const modalContent = siteDetailModal.querySelector('.modal-content'); // For event delegation on modal
-    const modalSiteName = modalContent.querySelector('h2');
-    const modalSiteImage = modalContent.querySelector('img');
-    const modalLongDesc = modalContent.querySelector('.long-desc');
-    const modalLocation = modalContent.querySelector('.location');
-    const closeModalButton = modalContent.querySelector('.close-modal');
+    const modalBody = document.getElementById('modal-body');
     const searchInput = document.getElementById('search-input');
     const clearSearchButton = document.getElementById('clear-search-btn');
-    const navLinks = document.querySelectorAll('nav ul li a');
-    const introductionSection = document.getElementById('introduction');
-    const searchSection = document.getElementById('search-section');
-    // sitesContainer is already defined in the outer scope
-    // mapViewSection is already defined in the outer scope
-    const aboutSection = document.getElementById('about-section');
-    const gallerySection = document.getElementById('gallery-section');
-
-    let navHomeLink = null;
-    let navAboutLink = null;
-    let navMapViewLink = null;
-    let navGalleryLink = null;
-
-    if (navLinks.length > 0) navHomeLink = navLinks[0]; // Assuming Home is the first link
-    if (navLinks.length > 1) navAboutLink = navLinks[1]; // Assuming About is the second link
-    if (navLinks.length > 2) navMapViewLink = navLinks[2]; // Assuming Map View is the third link (index 2)
-    if (navLinks.length > 3) navGalleryLink = navLinks[3]; // Assuming Gallery is the fourth link (index 3)
-
-
-    // Array of modal elements to animate
-    const animatedModalElements = [modalSiteName, modalSiteImage, modalLongDesc, modalLocation];
-    let currentAnimatedElements = []; // Declare here for wider access by openModal and closeModal
-
-    // Load ratings from localStorage into heritageSitesData
-    heritageSitesData.forEach(site => {
-        const storedRating = getRatingFromStorage(site.id);
-        site.averageRating = storedRating.averageRating;
-        site.numberOfRatings = storedRating.numberOfRatings;
-        // We are not pre-loading site.reviews here to save memory;
-        // reviews are loaded on demand when the modal opens.
-    });
+    const navLinks = document.querySelectorAll('.nav-link');
+    const contentSections = document.querySelectorAll('.content-section');
+    const featuredSiteContainer = document.getElementById('featured-site');
+    const featuredSiteContent = document.getElementById('featured-site-content');
+    const timelineContainer = document.getElementById('interactive-timeline');
 
     let mapInstance = null;
-    let lastFocusedElement; // To store the element that opened the modal
-    let modalKeydownListener; // To store the focus trap event listener
-    let documentKeydownListener; // To store the escape key event listener
 
     function displaySites(sites) {
-        // Example: at the beginning of displaySites(sites)
-        const mapViewSection = document.getElementById('map-view-section');
-        if (mapViewSection && !mapViewSection.classList.contains('hidden')) {
-            mapViewSection.classList.add('hidden');
-            // Potentially show the sites-container again if it was hidden
-            if (sitesContainer && sitesContainer.classList.contains('hidden')) {
-                 sitesContainer.classList.remove('hidden');
-            }
-        }
-        if (!sitesContainer) return; // Guard clause for robustness
-        // Clear placeholder content but keep the comment if it exists
-        const commentNodes = [];
-        sitesContainer.childNodes.forEach(node => {
-            if (node.nodeType === Node.COMMENT_NODE) {
-                commentNodes.push(node.cloneNode());
-            }
-        });
-        sitesContainer.innerHTML = ''; // Clear all content
-        commentNodes.forEach(comment => sitesContainer.appendChild(comment)); // Add comments back
-
+        sitesContainer.innerHTML = '';
         if (sites.length === 0) {
-            sitesContainer.innerHTML = '<p id="no-results-message">No matching sites found.</p>';
+            sitesContainer.innerHTML = '<p>No matching sites found.</p>';
             return;
         }
 
-        sites.forEach((site, index) => { // Added index parameter
+        sites.forEach(site => {
             const siteCard = document.createElement('article');
-            siteCard.classList.add('site-card');
-            // Note: Initial opacity:0 and transform:translateY(20px) are set in CSS
+            siteCard.className = 'site-card';
             siteCard.innerHTML = `
-                <img data-src="${site.image_url}" alt="${site.name}" class="lazy-load">
-                <h2>${site.name}</h2>
-                <p class="short-desc">${site.short_description}</p>
-                <div class="star-rating" id="rating-${site.id}"></div>
-                <button class="learn-more" data-id="${site.id}">Learn More</button>
+                <img src="${site.image_url}" alt="${site.name}" loading="lazy">
+                <div class="card-content">
+                    <h2>${site.name}</h2>
+                    <p class="short-desc">${site.short_description}</p>
+                    <div class="star-rating" id="rating-${site.id}"></div>
+                    <a href="#" class="learn-more" data-id="${site.id}">Learn More</a>
+                </div>
             `;
             sitesContainer.appendChild(siteCard);
-
-            // Display the average rating for the card
             displayAverageRating(site.id, site.averageRating, site.numberOfRatings);
-
-            // Staggered appearance
-            setTimeout(() => {
-                siteCard.classList.add('card-visible');
-            }, index * 100); // 100ms delay per card
         });
-        initializeLazyLoading(); // Call lazy loading initialization
     }
 
-    function initializeLazyLoading() {
-        const lazyImages = sitesContainer.querySelectorAll('img.lazy-load');
-
-        if ('IntersectionObserver' in window) {
-            const imageObserver = new IntersectionObserver((entries, observer) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const img = entry.target;
-                        img.onload = function() {
-                            this.classList.add('image-loaded');
-                        };
-                        img.onerror = function() {
-                            this.classList.add('image-error');
-                            // 'this.alt' initially holds site.name
-                            this.alt = 'Failed to load image for ' + this.alt + '.';
-                            if (this.dataset.src) this.removeAttribute('data-src'); // Clean up data-src
-                        };
-                        img.src = img.dataset.src;
-                        img.classList.remove('lazy-load'); // Removed once processing starts
-                        observer.unobserve(img); // Unobserve after setting src
-                    }
-                });
-            }, { rootMargin: '0px 0px 50px 0px' }); // Start loading 50px before they enter viewport
-
-            lazyImages.forEach(img => {
-                imageObserver.observe(img);
-            });
-        } else {
-            // Fallback for older browsers: load all images immediately
-            lazyImages.forEach(img => {
-                img.onload = function() {
-                    this.classList.add('image-loaded');
-                };
-                img.onerror = function() {
-                    this.classList.add('image-error');
-                    // 'this.alt' initially holds site.name
-                    this.alt = 'Failed to load image for ' + this.alt + '.';
-                    if (this.dataset.src) this.removeAttribute('data-src'); // Clean up data-src
-                };
-                img.src = img.dataset.src;
-                img.classList.remove('lazy-load');
-            });
-        }
+    function displayFeaturedSite() {
+        const featuredSite = heritageSitesData[Math.floor(Math.random() * heritageSitesData.length)];
+        featuredSiteContent.innerHTML = `
+            <img src="${featuredSite.image_url}" alt="${featuredSite.name}">
+            <h3>${featuredSite.name}</h3>
+            <p>${featuredSite.short_description}</p>
+            <a href="#" class="learn-more" data-id="${featuredSite.id}">Discover More</a>
+        `;
+        featuredSiteContainer.classList.remove('hidden');
     }
 
-    // Function to handle focus trapping within the modal
-    function trapFocus(event) {
-        if (event.key !== 'Tab') return;
+    function renderTimeline() {
+        const timelineData = [
+            { year: 'c. 600-900 CE', event: 'Pallava Dynasty', description: 'Pioneered rock-cut architecture at Mahabalipuram.' },
+            { year: 'c. 850-1279 CE', event: 'Chola Dynasty', description: 'Perfected Dravidian temple architecture, building the Great Living Chola Temples.' },
+            { year: '1908', event: 'Nilgiri Mountain Railway', description: 'Completed by the British, a marvel of engineering.' },
+            { year: '1984', event: 'UNESCO Recognition', description: 'Mahabalipuram monuments recognized as a World Heritage Site.' },
+            { year: '1987, 2004', event: 'UNESCO Recognition', description: 'Great Living Chola Temples inscribed.' },
+        ];
 
-        // More comprehensive selector for focusable elements
-        const focusableElementsString = 'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
-        let focusableModalElements = Array.from(
-            modalContent.querySelectorAll(focusableElementsString)
-        ).filter(el => el.offsetParent !== null); // Filter for visible elements
-
-        // If the review form elements are dynamically added, ensure they are included.
-        // The current implementation dynamically adds review form, so querySelectorAll on modalContent should find them.
-
-        if (focusableModalElements.length === 0) {
-            // If no focusable elements (e.g. modal content is just text),
-            // prevent tabbing out of the modal content area by focusing the modal itself or its first child.
-            // This might be too aggressive if there are truly no interactive elements.
-            // For now, if this case is hit, it means the modal is not properly interactive.
-            // A simple return might be fine, or focusing the modalContent itself if it has tabindex="0"
-            return;
-        }
-
-        // If focusableModalElements includes elements outside the desired trap area (e.g. if modalContent is not the top container)
-        // one might need to verify parentage. But here modalContent is the direct container.
-
-        const firstFocusableElement = focusableModalElements[0];
-        const lastFocusableElement = focusableModalElements[focusableModalElements.length - 1];
-        const currentElement = document.activeElement;
-
-        if (event.shiftKey) { // Shift + Tab
-            if (currentElement === firstFocusableElement) {
-                event.preventDefault();
-                lastFocusableElement.focus();
-            }
-        } else { // Tab
-            if (currentElement === lastFocusableElement) {
-                event.preventDefault();
-                firstFocusableElement.focus();
-            }
-        }
-        // If the focus is not on the first or last, or if there's only one, default tab behavior is fine within the modal elements
-    }
-
-    // Function to handle Escape key press for closing the modal
-    function escapeKeyClose(event) {
-        if (event.key === 'Escape') {
-            closeModal();
-        }
+        let timelineHTML = '';
+        timelineData.forEach(item => {
+            timelineHTML += `
+                <div class="timeline-item">
+                    <div class="timeline-year">${item.year}</div>
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <h4>${item.event}</h4>
+                        <p>${item.description}</p>
+                    </div>
+                </div>
+            `;
+        });
+        timelineContainer.innerHTML = timelineHTML;
     }
 
     function openModal(siteId) {
-        lastFocusedElement = document.activeElement; // Store the element that triggered the modal
-
         const site = heritageSitesData.find(s => s.id === parseInt(siteId));
-        if (!site) {
-            return;
-        }
+        if (!site) return;
 
-        modalSiteName.textContent = site.name;
-
-        // Clear previous error states
-        modalSiteImage.classList.remove('image-error');
-        modalSiteImage.alt = site.name; // Set base alt text
-
-        // Remove previous named error handler if any
-        if (modalSiteImage.currentErrorHandler) {
-            modalSiteImage.removeEventListener('error', modalSiteImage.currentErrorHandler);
-        }
-
-        // Define the new error handler for the current site
-        // 'site' variable is accessible here due to closure
-        const handleModalImageError = function() {
-            this.classList.add('image-error');
-            this.alt = 'Image for ' + site.name + ' is not available. Please check the URL or try again later.';
-            // Ensure this function is not called repeatedly for the same error by removing itself
-            this.removeEventListener('error', handleModalImageError);
-        };
-
-        modalSiteImage.currentErrorHandler = handleModalImageError; // Store the handler
-        modalSiteImage.addEventListener('error', modalSiteImage.currentErrorHandler);
-
-        // Then, set the src:
-        modalSiteImage.src = site.image_url;
-
-        let fullDescription = site.long_description;
-        
-        // Add specific sites/locations
-        if (site.specific_sites && site.specific_sites.length > 0) {
-            fullDescription += `<br><br><strong>Key Locations:</strong><ul>${site.specific_sites.map(ss => `<li>${ss}</li>`).join('')}</ul>`;
-        }
-        
-        // Add key structures
-        if (site.key_structures && site.key_structures.length > 0) {
-            fullDescription += `<br><br><strong>Key Structures:</strong><ul>${site.key_structures.map(ks => `<li>${ks}</li>`).join('')}</ul>`;
-        }
-        
-        // Add key features (for railway)
-        if (site.key_features && site.key_features.length > 0) {
-            fullDescription += `<br><br><strong>Key Features:</strong><ul>${site.key_features.map(kf => `<li>${kf}</li>`).join('')}</ul>`;
-        }
-        
-        // Add biodiversity info (for Western Ghats)
-        if (site.biodiversity && site.biodiversity.length > 0) {
-            fullDescription += `<br><br><strong>Biodiversity Highlights:</strong><ul>${site.biodiversity.map(bio => `<li>${bio}</li>`).join('')}</ul>`;
-        }
-        
-        // Add key species (for national parks)
-        if (site.key_species && site.key_species.length > 0) {
-            fullDescription += `<br><br><strong>Key Species:</strong><ul>${site.key_species.map(species => `<li>${species}</li>`).join('')}</ul>`;
-        }
-        
-        // Add architectural features
-        if (site.architectural_features && site.architectural_features.length > 0) {
-            fullDescription += `<br><br><strong>Architectural Features:</strong><ul>${site.architectural_features.map(feature => `<li>${feature}</li>`).join('')}</ul>`;
-        }
-        
-        // Add historical information
-        let historicalInfo = '';
-        if (site.year_built) historicalInfo += `<strong>Built:</strong> ${site.year_built}<br>`;
-        if (site.year_established) historicalInfo += `<strong>Established:</strong> ${site.year_established}<br>`;
-        if (site.dynasty) historicalInfo += `<strong>Dynasty:</strong> ${site.dynasty}<br>`;
-        if (site.patron) historicalInfo += `<strong>Patron:</strong> ${site.patron}<br>`;
-        if (site.engineer) historicalInfo += `<strong>Engineer:</strong> ${site.engineer}<br>`;
-        if (site.architectural_style) historicalInfo += `<strong>Style:</strong> ${site.architectural_style}<br>`;
-        if (site.area) historicalInfo += `<strong>Area:</strong> ${site.area}<br>`;
-        if (site.elevation_range) historicalInfo += `<strong>Elevation:</strong> ${site.elevation_range}<br>`;
-        if (site.gauge) historicalInfo += `<strong>Gauge:</strong> ${site.gauge}<br>`;
-        if (site.materials) historicalInfo += `<strong>Materials:</strong> ${site.materials}<br>`;
-        
-        if (historicalInfo) {
-            fullDescription += `<br><br><strong>Historical Details:</strong><br>${historicalInfo}`;
-        }
-        
-        // Add significance
-        if (site.significance) {
-            fullDescription += `<br><strong>Significance:</strong> ${site.significance}`;
-        }
-        
-        modalLongDesc.innerHTML = fullDescription; // Use innerHTML for lists
-
-        modalLocation.textContent = `Coordinates: ${site.coordinates}`;
-
-        // Remove existing review sections if they exist to prevent duplication
-        const existingAvgRating = modalContent.querySelector('.average-rating-modal');
-        if (existingAvgRating) existingAvgRating.remove();
-        const existingReviewsList = modalContent.querySelector('.reviews-list');
-        if (existingReviewsList) existingReviewsList.remove();
-        const existingReviewForm = modalContent.querySelector('.review-form-container');
-        if (existingReviewForm) existingReviewForm.remove();
-
-        // Average Rating Display
-        const avgRatingDiv = document.createElement('div');
-        avgRatingDiv.className = 'average-rating-modal';
-        avgRatingDiv.id = `modal-avg-rating-${site.id}`;
-        avgRatingDiv.textContent = 'No ratings yet'; // This will be updated later
-        modalContent.appendChild(avgRatingDiv);
-
-        // Reviews List
-        const reviewsListDiv = document.createElement('div');
-        reviewsListDiv.className = 'reviews-list';
-        reviewsListDiv.id = `modal-reviews-list-${site.id}`;
-        reviewsListDiv.innerHTML = '<h3>User Reviews</h3><ul></ul>'; // List items will be added here
-        modalContent.appendChild(reviewsListDiv);
-
-        // Review Submission Form
-        const reviewFormContainer = document.createElement('div');
-        reviewFormContainer.className = 'review-form-container';
-        reviewFormContainer.innerHTML = `
-            <h3>Leave a Review</h3>
-            <form id="review-form-${site.id}">
-                <div class="rating-input">
-                    <label for="rating-stars-${site.id}">Rating:</label>
-                    <select id="rating-stars-${site.id}" name="rating">
-                        <option value="5">5 Stars</option>
-                        <option value="4">4 Stars</option>
-                        <option value="3">3 Stars</option>
-                        <option value="2">2 Stars</option>
-                        <option value="1">1 Star</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="review-text-${site.id}">Review:</label>
-                    <textarea id="review-text-${site.id}" name="reviewText" rows="4" required></textarea>
-                </div>
-                <button type="submit">Submit Review</button>
-            </form>
+        let detailsHtml = `
+            <h2 id="modal-site-name">${site.name}</h2>
+            <img src="${site.image_url}" alt="${site.name}">
+            <p>${site.long_description}</p>
+            <p><strong>Coordinates:</strong> ${site.coordinates}</p>
         `;
-        modalContent.appendChild(reviewFormContainer);
 
-        // Prepare elements for animation
-        // Add new elements to animatedModalElements if they should also be animated
-        const newAnimatedElements = [avgRatingDiv, reviewsListDiv, reviewFormContainer];
-        // Assign to the higher-scoped variable:
-        currentAnimatedElements = [modalSiteName, modalSiteImage, modalLongDesc, modalLocation, ...newAnimatedElements];
+        if (site.year_built) detailsHtml += `<p><strong>Year Built:</strong> ${site.year_built}</p>`;
+        if (site.dynasty) detailsHtml += `<p><strong>Dynasty:</strong> ${site.dynasty}</p>`;
 
-
-        currentAnimatedElements.forEach(el => { // Use the higher-scoped variable
-            el.classList.add('modal-element-animate');
-            el.classList.remove('modal-element-visible'); // Ensure it's hidden before animation
-        });
-
-        siteDetailModal.classList.remove('hidden'); // This triggers modal container transition (opacity for overlay)
-
-        // After a short delay for the modal container to become visible, trigger element animations
-        currentAnimatedElements.forEach((el, index) => { // Use the higher-scoped variable
-            setTimeout(() => {
-                el.classList.add('modal-element-visible');
-            }, 100 + index * 50); // Start after 100ms, then stagger by 50ms
-        });
-
-        // Attach event listener to the new review form
-        const reviewForm = document.getElementById(`review-form-${site.id}`);
-        if (reviewForm) {
-            reviewForm.addEventListener('submit', (event) => {
-                event.preventDefault();
-                const ratingSelect = document.getElementById(`rating-stars-${site.id}`);
-                const reviewTextarea = document.getElementById(`review-text-${site.id}`);
-
-                const ratingValue = parseInt(ratingSelect.value, 10);
-                const reviewTextValue = reviewTextarea.value.trim();
-
-                if (reviewTextValue) { // Basic validation: review text should not be empty
-                    handleReviewSubmission(site.id, ratingValue, reviewTextValue);
-                    // Optionally clear form
-                    ratingSelect.value = "5"; // Reset to default
-                    reviewTextarea.value = '';
-                } else {
-                    // Handle empty review text case, e.g., show an error message
-                    alert("Please write a review before submitting.");
-                }
-            });
-        }
-
-        // Load and display existing ratings and reviews
-        const storedRatingData = getRatingFromStorage(site.id);
-        displayAverageRating(site.id, storedRatingData.averageRating, storedRatingData.numberOfRatings);
-        displayReviewsInModal(site.id);
-
-        // Focus on the close button first or the modal title
-        closeModalButton.focus(); // Or modalSiteName if preferred
-
-        // Add event listeners for focus trapping and escape key
-        modalKeydownListener = trapFocus; // Assign function directly
-        documentKeydownListener = escapeKeyClose; // Assign function directly
-
-        modalContent.addEventListener('keydown', modalKeydownListener);
-        document.addEventListener('keydown', documentKeydownListener);
+        modalBody.innerHTML = detailsHtml;
+        siteDetailModal.classList.remove('hidden');
     }
 
     function closeModal() {
         siteDetailModal.classList.add('hidden');
-
-        // Remove event listeners
-        if (modalKeydownListener) {
-            modalContent.removeEventListener('keydown', modalKeydownListener);
-            modalKeydownListener = null; // Clear stored listener
-        }
-        if (documentKeydownListener) {
-            document.removeEventListener('keydown', documentKeydownListener);
-            documentKeydownListener = null; // Clear stored listener
-        }
-
-        // Reset elements for next time modal opens
-        // currentAnimatedElements is now accessible from the higher scope
-        if (currentAnimatedElements && currentAnimatedElements.length > 0) { // Check if it has been populated
-            currentAnimatedElements.forEach(el => {
-                if (el) { // Add a check for el in case the array was modified unexpectedly
-                    el.classList.remove('modal-element-animate', 'modal-element-visible');
-                }
-            });
-        }
-
-        // Remove tabindex from elements that were made focusable
-
-        // Restore focus to the element that opened the modal
-        if (lastFocusedElement) {
-            lastFocusedElement.focus();
-        }
+        modalBody.innerHTML = '';
     }
 
     function initializeMap() {
@@ -632,7 +306,27 @@ document.addEventListener('DOMContentLoaded', () => {
         return { lat: null, lon: null }; // Explicitly return nulls
     }
 
-    // --- Review and Rating Functions ---
+    function handleNavigation(targetId) {
+        contentSections.forEach(section => {
+            section.classList.toggle('hidden', section.id !== targetId);
+            section.classList.toggle('active', section.id === targetId);
+        });
+
+        navLinks.forEach(link => {
+            link.classList.toggle('active', link.dataset.section === targetId);
+        });
+
+        if (targetId === 'map-view-section' && !mapInstance) {
+            initializeMap();
+        }
+    }
+
+    navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            handleNavigation(link.dataset.section);
+        });
+    });
 
     function getReviewsFromStorage(siteId) {
         const reviewsJSON = localStorage.getItem(`reviews-${siteId}`);
@@ -765,217 +459,28 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Event Listeners
-
-    function setActiveLink(activeLink) {
-        navLinks.forEach(link => link.classList.remove('active'));
-        if (activeLink) {
-            activeLink.classList.add('active');
+    document.body.addEventListener('click', (event) => {
+        if (event.target.matches('.learn-more')) {
+            event.preventDefault();
+            openModal(event.target.dataset.id);
         }
-    }
-
-    if (navHomeLink) {
-        navHomeLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            if (introductionSection) introductionSection.classList.remove('hidden');
-            if (searchSection) searchSection.classList.remove('hidden');
-            if (sitesContainer) sitesContainer.classList.remove('hidden');
-            if (mapViewSection) mapViewSection.classList.add('hidden');
-            if (aboutSection) aboutSection.classList.add('hidden');
-            if (gallerySection) gallerySection.classList.add('hidden');
-            setActiveLink(navHomeLink);
-        });
-    }
-
-    if (navAboutLink) {
-        navAboutLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            if (introductionSection) introductionSection.classList.add('hidden');
-            if (searchSection) searchSection.classList.add('hidden');
-            if (sitesContainer) sitesContainer.classList.add('hidden');
-            if (mapViewSection) mapViewSection.classList.add('hidden');
-            if (aboutSection) aboutSection.classList.remove('hidden');
-            if (gallerySection) gallerySection.classList.add('hidden');
-            setActiveLink(navAboutLink);
-        });
-    }
-
-    if (navMapViewLink) {
-        navMapViewLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            if (introductionSection) introductionSection.classList.add('hidden');
-            if (searchSection) searchSection.classList.add('hidden');
-            if (sitesContainer) sitesContainer.classList.add('hidden');
-            if (aboutSection) aboutSection.classList.add('hidden');
-            if (gallerySection) gallerySection.classList.add('hidden');
-
-            if (mapViewSection) mapViewSection.classList.remove('hidden');
-
-            initializeMap(); // Initialize map if not already done
-            if (mapInstance) { // mapInstance is from a previous step
-                setTimeout(() => { // Use a timeout to ensure the container is visible and has dimensions
-                    mapInstance.invalidateSize();
-                }, 10);
-            }
-            setActiveLink(navMapViewLink);
-        });
-    }
-
-    if (navGalleryLink) {
-        navGalleryLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            if (introductionSection) introductionSection.classList.add('hidden');
-            if (searchSection) searchSection.classList.add('hidden');
-            if (sitesContainer) sitesContainer.classList.add('hidden');
-            if (aboutSection) aboutSection.classList.add('hidden');
-            if (mapViewSection) mapViewSection.classList.add('hidden');
-
-            if (gallerySection) gallerySection.classList.remove('hidden');
-            
-            setActiveLink(navGalleryLink);
-        });
-    }
-
-    if (mapViewSection) {
-        mapViewSection.addEventListener('click', function(event) {
-            if (event.target.classList.contains('map-learn-more')) {
-                const siteId = event.target.dataset.id;
-                if (siteId) {
-                    openModal(parseInt(siteId, 10)); // openModal is an existing function
-                }
-            }
-        });
-    }
-
-    if (sitesContainer) {
-        sitesContainer.addEventListener('click', (event) => {
-            if (event.target.classList.contains('learn-more')) {
-                const siteId = event.target.dataset.id;
-                openModal(siteId);
-            }
-        });
-    }
-
-    if (closeModalButton) {
-        closeModalButton.addEventListener('click', closeModal);
-    }
-
-    if (siteDetailModal) {
-        siteDetailModal.addEventListener('click', (event) => {
-            // If the click is directly on the modal overlay (not its content), close it.
-            if (event.target === siteDetailModal) {
-                closeModal();
-            }
-        });
-    }
-
-    // Event Listener for search input
-    if (searchInput) {
-        searchInput.addEventListener('input', () => {
-            const searchTerm = searchInput.value.trim();
-            // clearSearchButton is already defined in the outer scope
-            if (clearSearchButton) {
-                if (searchTerm !== '') {
-                    clearSearchButton.classList.remove('hidden');
-                } else {
-                    clearSearchButton.classList.add('hidden');
-                }
-            }
-
-            const lowerCaseSearchTerm = searchTerm.toLowerCase();
-            // heritageSitesData is global
-            const filteredSites = heritageSitesData.filter(site => {
-                return site.name.toLowerCase().includes(lowerCaseSearchTerm) ||
-                       site.short_description.toLowerCase().includes(lowerCaseSearchTerm);
-            });
-            displaySites(filteredSites); // displaySites is global and hides map
-            if (navHomeLink) setActiveLink(navHomeLink); // Set Home link active
-        });
-
-        // Initial check for search input value on page load (e.g., if pre-filled)
-        if (clearSearchButton && searchInput.value.trim() !== '') {
-            clearSearchButton.classList.remove('hidden');
-        } else if (clearSearchButton) {
-            clearSearchButton.classList.add('hidden');
-        }
-
-    }
-
-    // Event Listener for clear search button
-    if (clearSearchButton) {
-        clearSearchButton.addEventListener('click', () => {
-            searchInput.value = '';
-            displaySites(heritageSitesData); // displaySites is global and hides map
-            clearSearchButton.classList.add('hidden');
-            searchInput.focus();
-            if (navHomeLink) setActiveLink(navHomeLink); // Set Home link active
-        });
-    }
-
-    // Initial display of sites
-    if (heritageSitesData.length > 0 && sitesContainer) {
-        displaySites(heritageSitesData);
-    } else if (!sitesContainer) {
-        // If sitesContainer itself is missing, there's nowhere to put the message.
-        // This case implies a fundamental HTML structure issue.
-    } else {
-        sitesContainer.innerHTML = "<p>No heritage site data to display.</p>"; // Fallback message
-    }
-
-    // Page load animations for sections
-    const sectionsToAnimate = [
-        document.getElementById('introduction'),
-        document.getElementById('sites-container'),
-        document.querySelector('footer')
-    ];
-
-    sectionsToAnimate.forEach((section, index) => {
-        if (section) {
-            section.classList.add('fade-in-section');
-            setTimeout(() => {
-                section.classList.add('is-visible');
-            }, index * 150); // 150ms stagger
+        if (event.target.matches('[data-close-modal]')) {
+            closeModal();
         }
     });
 
-    // Gallery filter functionality
-    function initializeGalleryFilters() {
-        const filterButtons = document.querySelectorAll('.filter-btn');
-        const galleryItems = document.querySelectorAll('.gallery-item');
+    searchInput.addEventListener('input', () => {
+        const searchTerm = searchInput.value.toLowerCase();
+        const filteredSites = heritageSitesData.filter(site =>
+            site.name.toLowerCase().includes(searchTerm) ||
+            site.short_description.toLowerCase().includes(searchTerm)
+        );
+        displaySites(filteredSites);
+    });
 
-        filterButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                // Remove active class from all buttons
-                filterButtons.forEach(btn => btn.classList.remove('active'));
-                // Add active class to clicked button
-                button.classList.add('active');
-
-                const filterValue = button.dataset.filter;
-
-                galleryItems.forEach(item => {
-                    if (filterValue === 'all' || item.dataset.site === filterValue) {
-                        item.classList.remove('filtered-out');
-                        // Add animation for showing items
-                        setTimeout(() => {
-                            item.style.opacity = '1';
-                            item.style.transform = 'scale(1)';
-                        }, 100);
-                    } else {
-                        item.classList.add('filtered-out');
-                        item.style.opacity = '0';
-                        item.style.transform = 'scale(0.8)';
-                    }
-                });
-            });
-        });
-    }
-
-    // Initialize gallery filters when the page loads
-    initializeGalleryFilters();
-
-    if (navHomeLink) {
-        setActiveLink(navHomeLink);
-    } else if (navLinks.length > 0) {
-        setActiveLink(navLinks[0]);
-    }
+    // Initial load
+    displaySites(heritageSitesData);
+    displayFeaturedSite();
+    renderTimeline();
+    handleNavigation('home-section');
 });
