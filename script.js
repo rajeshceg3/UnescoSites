@@ -130,7 +130,9 @@ document.addEventListener('DOMContentLoaded', () => {
             siteCard.className = 'site-card';
             siteCard.dataset.siteId = site.id;
             siteCard.innerHTML = `
-                <img src="${site.image_url}" alt="${site.name}" loading="lazy">
+                <div class="card-img-container">
+                    <img src="${site.image_url}" alt="${site.name}" loading="lazy">
+                </div>
                 <div class="card-content">
                     <h2>${site.name}</h2>
                     <p class="short-desc">${site.short_description}</p>
@@ -195,11 +197,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         modalBody.innerHTML = detailsHtml;
         siteDetailModal.classList.remove('hidden');
+        // Requesting a reflow to ensure the transition is applied
+        window.getComputedStyle(siteDetailModal).opacity;
     }
 
     function closeModal() {
         siteDetailModal.classList.add('hidden');
-        modalBody.innerHTML = '';
+        // The transitionend event could be used to clear the modal body
+        // but for simplicity, we'll clear it after the transition duration.
+        setTimeout(() => {
+            modalBody.innerHTML = '';
+        }, 400); // Corresponds to the transition duration in CSS
     }
 
     function initializeMap() {
@@ -418,7 +426,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function handleNavigation(targetId) {
         contentSections.forEach(section => {
-            section.classList.toggle('hidden', section.id !== targetId);
             section.classList.toggle('active', section.id === targetId);
         });
 
@@ -587,6 +594,56 @@ document.addEventListener('DOMContentLoaded', () => {
         );
         displaySites(filteredSites);
     });
+
+    function setupScrollAnimations() {
+        const options = {
+            rootMargin: '0px',
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, options);
+
+        const targets = document.querySelectorAll('.site-card');
+        targets.forEach(target => observer.observe(target));
+    }
+
+    // Modify displaySites to call the animation setup
+    function displaySites(sites) {
+        sitesContainer.innerHTML = '';
+        if (sites.length === 0) {
+            sitesContainer.innerHTML = '<p>No matching sites found.</p>';
+            return;
+        }
+
+        sites.forEach(site => {
+            const siteCard = document.createElement('article');
+            siteCard.className = 'site-card';
+            siteCard.dataset.siteId = site.id;
+            siteCard.innerHTML = `
+                <div class="card-img-container">
+                    <img src="${site.image_url}" alt="${site.name}" loading="lazy">
+                </div>
+                <div class="card-content">
+                    <h2>${site.name}</h2>
+                    <p class="short-desc">${site.short_description}</p>
+                    <div class="star-rating" id="rating-${site.id}"></div>
+                    <a href="#" class="learn-more" data-id="${site.id}">Learn More</a>
+                </div>
+            `;
+            sitesContainer.appendChild(siteCard);
+            displayAverageRating(site.id, site.averageRating, site.numberOfRatings);
+        });
+
+        // Set up animations after cards are added to the DOM
+        setupScrollAnimations();
+    }
 
     // Initial load
     displaySites(heritageSitesData);
