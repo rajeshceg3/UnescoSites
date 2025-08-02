@@ -9,12 +9,21 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header>
-        <div class="header-content">
-            <h1>Echoes of Eternity</h1>
-            <p class="subtitle">A Photographer's Journey Through Tamil Nadu's UNESCO Treasures</p>
-        </div>
-    </header>
+    <div class="hero-container">
+        <div class="hero-background"></div>
+        <header>
+            <div class="header-content">
+                <h1>Echoes of Eternity</h1>
+                <p class="subtitle">A Photographer's Journey Through Tamil Nadu's UNESCO Treasures</p>
+            </div>
+        </header>
+        <section id="hero-section">
+            <div class="hero-text">
+                <h2>The Curator's Desk</h2>
+                <p>Discover the stories behind Tamil Nadu's most treasured landmarks.</p>
+            </div>
+        </section>
+    </div>
     <nav id="main-nav">
         <ul>
             <li><a href="#home" class="nav-link active" data-section="home-section">Home</a></li>
@@ -25,12 +34,6 @@
     </nav>
     <main>
         <section id="home-section" class="content-section active">
-            <div id="hero-section">
-                <div class="hero-text">
-                    <h2>The Curator's Desk</h2>
-                    <p>Discover the stories behind Tamil Nadu's most treasured landmarks.</p>
-                </div>
-            </div>
             <section id="introduction">
                 <p>Welcome, fellow traveler. What you are about to see is more than just a collection of landmarks. It is a visual journey into the soul of Southern India, a land where history is etched in stone and nature holds ancient secrets.</p>
                 <p>Through my lens, I invite you to explore the UNESCO World Heritage sites of Tamil Nadu not as a tourist, but as a storyteller. Together, we will chase the light that illuminates thousand-year-old temples, listen to the whispers of the wind across sacred mountains, and feel the pulse of a culture that continues to thrive in the shadow of its magnificent past.</p>
@@ -41,7 +44,7 @@
                 <div id="featured-site-content">
                     </div>
             </section>
-        <section id="timeline-section" class="content-section hidden">
+        <section id="timeline-section" class="content-section">
             <h2>Dynasties and Timelines</h2>
             <div id="interactive-timeline">
                 </div>
@@ -60,7 +63,7 @@
                 </div>
             </div>
         </div>
-        <section id="map-view-section" class="content-section hidden">
+        <section id="map-view-section" class="content-section">
             <h2>Interactive Map of Heritage Sites</h2>
             <div class="map-controls">
                 <p>Select a map style:</p>
@@ -72,7 +75,7 @@
             </div>
             <div id="map-container"></div>
         </section>
-        <section id="about-section" class="content-section hidden">
+        <section id="about-section" class="content-section">
             <h2>About Tamil Nadu's UNESCO Heritage</h2>
             <div class="about-content">
                 <div class="heritage-overview">
@@ -125,7 +128,7 @@
                 </div>
             </div>
         </section>
-        <section id="gallery-section" class="content-section hidden">
+        <section id="gallery-section" class="content-section">
             <h2>Heritage Gallery</h2>
             <div class="gallery-content">
                 <p class="gallery-intro">Explore the magnificent architecture, natural beauty, and cultural heritage of Tamil Nadu's UNESCO World Heritage Sites through this curated collection of images.</p>
