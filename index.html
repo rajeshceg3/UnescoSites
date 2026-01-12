@@ -9,196 +9,160 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <header id="site-header">
+        <div class="header-content">
+            <div class="brand">Echoes of Eternity</div>
+            <button class="nav-toggle" aria-label="Toggle navigation">
+                <i class="fas fa-bars"></i>
+            </button>
+            <nav id="main-nav">
+                <ul>
+                    <li><a href="#home" class="nav-link active" data-section="home-section">Home</a></li>
+                    <li><a href="#timeline" class="nav-link" data-section="timeline-section">Timeline</a></li>
+                    <li><a href="#map" class="nav-link" data-section="map-view-section">Map</a></li>
+                    <li><a href="#gallery" class="nav-link" data-section="gallery-section">Gallery</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
     <div class="hero-container">
         <div class="hero-background"></div>
-        <header>
-            <div class="header-content">
-                <h1>Echoes of Eternity</h1>
-                <p class="subtitle">A Photographer's Journey Through Tamil Nadu's UNESCO Treasures</p>
-            </div>
-        </header>
-        <section id="hero-section">
-            <div class="hero-text">
-                <h2>The Curator's Desk</h2>
-                <p>Discover the stories behind Tamil Nadu's most treasured landmarks.</p>
-            </div>
-        </section>
+        <div class="hero-overlay"></div>
+        <div class="hero-text-content">
+            <h1>The Curator's Desk</h1>
+            <p class="subtitle">A Photographer's Journey Through Tamil Nadu's UNESCO Treasures</p>
+            <a href="#home-section" class="btn-hero" onclick="document.getElementById('home-section').scrollIntoView({behavior: 'smooth'})">Start the Journey</a>
+        </div>
     </div>
-    <nav id="main-nav">
-        <ul>
-            <li><a href="#home" class="nav-link active" data-section="home-section">Home</a></li>
-            <li><a href="#timeline" class="nav-link" data-section="timeline-section">Timeline</a></li>
-            <li><a href="#map" class="nav-link" data-section="map-view-section">Map</a></li>
-            <li><a href="#gallery" class="nav-link" data-section="gallery-section">Gallery</a></li>
-        </ul>
-    </nav>
+
     <main>
         <section id="home-section" class="content-section active">
-            <section id="introduction">
-                <p>Welcome, fellow traveler. What you are about to see is more than just a collection of landmarks. It is a visual journey into the soul of Southern India, a land where history is etched in stone and nature holds ancient secrets.</p>
-                <p>Through my lens, I invite you to explore the UNESCO World Heritage sites of Tamil Nadu not as a tourist, but as a storyteller. Together, we will chase the light that illuminates thousand-year-old temples, listen to the whispers of the wind across sacred mountains, and feel the pulse of a culture that continues to thrive in the shadow of its magnificent past.</p>
-                <p>This is a quest for beauty, a search for meaning, and an ode to the timeless spirit of human creation and natural wonder. Let the adventure begin.</p>
-            </section>
-            <section id="featured-site" class="hidden">
-                <h3>Featured Site</h3>
-                <div id="featured-site-content">
-                    </div>
-            </section>
+            <div class="container">
+                <section id="introduction">
+                    <p>Welcome, fellow traveler. What you are about to see is more than just a collection of landmarks. It is a visual journey into the soul of Southern India, a land where history is etched in stone and nature holds ancient secrets.</p>
+                    <p>Through my lens, I invite you to explore the UNESCO World Heritage sites of Tamil Nadu not as a tourist, but as a storyteller. Together, we will chase the light that illuminates thousand-year-old temples, listen to the whispers of the wind across sacred mountains, and feel the pulse of a culture that continues to thrive in the shadow of its magnificent past.</p>
+                </section>
+
+                <section id="featured-site" class="hidden">
+                    <h3>Featured Site</h3>
+                    <div id="featured-site-content"></div>
+                </section>
+
+                <section id="search-section">
+                    <input type="text" id="search-input" placeholder="Search sites by name or keyword...">
+                    <button id="clear-search-btn" class="hidden" aria-label="Clear search input">✖</button>
+                </section>
+
+                <section id="sites-container">
+                    <!-- Sites injected via JS -->
+                </section>
+            </div>
+        </section>
+
         <section id="timeline-section" class="content-section">
-            <h2>Dynasties and Timelines</h2>
-            <div id="interactive-timeline">
+            <div class="container">
+                <h2>Dynasties and Timelines</h2>
+                <div id="interactive-timeline">
+                    <!-- Timeline injected via JS -->
                 </div>
+            </div>
         </section>
-        <section id="search-section">
-            <input type="text" id="search-input" placeholder="Search sites by name or keyword...">
-            <button id="clear-search-btn" class="hidden" aria-label="Clear search input for heritage sites">✖</button>
-        </section>
-        <section id="sites-container">
-            </section>
-        <div id="site-detail-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modal-site-name">
-            <div class="modal-overlay" tabindex="-1" data-close-modal></div>
-            <div class="modal-content">
-                <button class="close-modal" aria-label="Close site details" data-close-modal> &times; </button>
-                <div id="modal-body">
+
+        <section id="map-view-section" class="content-section">
+            <div class="container">
+                <div class="map-controls">
+                    <h2>Interactive Map</h2>
+                    <select id="map-layer-switcher">
+                        <option value="osm">Default</option>
+                        <option value="satellite">Satellite</option>
+                        <option value="topo">Topographic</option>
+                    </select>
                 </div>
+                <div id="map-container"></div>
+            </div>
+        </section>
+
+        <section id="gallery-section" class="content-section">
+            <div class="container">
+                <h2>Heritage Gallery</h2>
+                <div class="gallery-content">
+                    <p class="gallery-intro">Explore the magnificent architecture, natural beauty, and cultural heritage of Tamil Nadu's UNESCO World Heritage Sites through this curated collection of images.</p>
+                    
+                    <div class="gallery-filters">
+                        <button class="filter-btn active" data-filter="all">All</button>
+                        <button class="filter-btn" data-filter="chola">Chola</button>
+                        <button class="filter-btn" data-filter="mahabalipuram">Mahabalipuram</button>
+                        <button class="filter-btn" data-filter="railway">Railway</button>
+                        <button class="filter-btn" data-filter="western-ghats">Nature</button>
+                    </div>
+
+                    <div class="gallery-grid" id="gallery-grid">
+                        <!-- Gallery Items (using existing structure logic or simplified grid) -->
+                        <div class="gallery-item" data-site="chola">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/Thanjavur_periya_kovil.jpg/800px-Thanjavur_periya_kovil.jpg" alt="Brihadeeswara Temple Thanjavur">
+                            <div class="gallery-overlay">
+                                <h3>Brihadeeswara Temple</h3>
+                            </div>
+                        </div>
+
+                        <div class="gallery-item" data-site="mahabalipuram">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/bb/Descent_of_the_Ganges_Mahabalipuram.jpg/800px-Descent_of_the_Ganges_Mahabalipuram.jpg" alt="Descent of the Ganges Relief">
+                            <div class="gallery-overlay">
+                                <h3>Descent of the Ganges</h3>
+                            </div>
+                        </div>
+
+                        <div class="gallery-item" data-site="mahabalipuram">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/Pancha_Rathas_Mahabalipuram.jpg/800px-Pancha_Rathas_Mahabalipuram.jpg" alt="Pancha Rathas">
+                            <div class="gallery-overlay">
+                                <h3>Pancha Rathas</h3>
+                            </div>
+                        </div>
+
+                        <div class="gallery-item" data-site="railway">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/Nilgiri_Mountain_Railway_Steam_Engine.jpg/800px-Nilgiri_Mountain_Railway_Steam_Engine.jpg" alt="Nilgiri Mountain Railway">
+                            <div class="gallery-overlay">
+                                <h3>Nilgiri Mountain Railway</h3>
+                            </div>
+                        </div>
+
+                        <div class="gallery-item" data-site="western-ghats">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Western_Ghats_landscape.jpg/800px-Western_Ghats_landscape.jpg" alt="Western Ghats Landscape">
+                            <div class="gallery-overlay">
+                                <h3>Western Ghats</h3>
+                            </div>
+                        </div>
+
+                        <div class="gallery-item" data-site="chola">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Chola_bronze_sculptures.jpg/800px-Chola_bronze_sculptures.jpg" alt="Chola Bronze Sculptures">
+                            <div class="gallery-overlay">
+                                <h3>Chola Bronzes</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="site-detail-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modal-site-name">
+        <div class="modal-overlay" tabindex="-1" data-close-modal></div>
+        <div class="modal-content">
+            <button class="close-modal" aria-label="Close site details" data-close-modal> &times; </button>
+            <div id="modal-header-container"></div>
+            <div id="modal-body" class="modal-body-content">
             </div>
         </div>
-        <section id="map-view-section" class="content-section">
-            <h2>Interactive Map of Heritage Sites</h2>
-            <div class="map-controls">
-                <p>Select a map style:</p>
-                <select id="map-layer-switcher">
-                    <option value="osm">Default</option>
-                    <option value="satellite">Satellite</option>
-                    <option value="topo">Topographic</option>
-                </select>
-            </div>
-            <div id="map-container"></div>
-        </section>
-        <section id="about-section" class="content-section">
-            <h2>About Tamil Nadu's UNESCO Heritage</h2>
-            <div class="about-content">
-                <div class="heritage-overview">
-                    <h3>A Land of Ancient Splendor</h3>
-                    <p>Tamil Nadu, located in the southernmost part of India, is home to an extraordinary collection of UNESCO World Heritage Sites that span over 1,400 years of history. From the architectural marvels of the Chola and Pallava dynasties to the unique biodiversity of the Western Ghats, these sites represent the pinnacle of human achievement in art, architecture, engineering, and conservation.</p>
-                    
-                    <h3>The Great Temple Builders</h3>
-                    <p>The ancient dynasties of Tamil Nadu were prolific builders who created some of India's most magnificent temples. The Pallavas (3rd-9th centuries CE) pioneered rock-cut architecture at Mahabalipuram, while the Cholas (9th-13th centuries CE) perfected the art of temple construction, creating architectural wonders that continue to inspire awe today.</p>
-                    
-                    <h3>Architectural Styles</h3>
-                    <ul>
-                        <li><strong>Dravidian Architecture:</strong> Characterized by towering vimanas (temple towers), intricate sculptures, and gopurams (gateway towers)</li>
-                        <li><strong>Rock-cut Architecture:</strong> Temples carved directly from living rock, showcasing incredible skill and artistry</li>
-                        <li><strong>Structural Temples:</strong> Free-standing stone temples that represent the evolution from rock-cut to constructed architecture</li>
-                    </ul>
-                    
-                    <h3>Engineering Marvels</h3>
-                    <p>Beyond temples, Tamil Nadu showcases remarkable engineering achievements. The Nilgiri Mountain Railway, built in 1908, remains one of the world's steepest railways, using innovative rack and pinion technology to navigate the challenging terrain of the Western Ghats.</p>
-                    
-                    <h3>Biodiversity Hotspots</h3>
-                    <p>The Western Ghats in Tamil Nadu represent one of the world's most important biodiversity hotspots. These ancient mountains, older than the Himalayas, harbor thousands of endemic species and critical ecosystems that have evolved over millions of years.</p>
-                    
-                    <h3>Living Heritage</h3>
-                    <p>What makes Tamil Nadu's heritage sites truly special is that they remain "living" heritage. Temples built over 1,000 years ago continue to be active places of worship, maintaining traditions and rituals that have been practiced for centuries. This continuity between past and present makes these sites not just monuments, but living embodiments of Tamil culture and spirituality.</p>
-                    
-                    <div class="heritage-stats">
-                        <h3>Heritage by Numbers</h3>
-                        <div class="stats-grid">
-                            <div class="stat-item">
-                                <h4>6</h4>
-                                <p>UNESCO World Heritage Sites</p>
-                            </div>
-                            <div class="stat-item">
-                                <h4>1400+</h4>
-                                <p>Years of History</p>
-                            </div>
-                            <div class="stat-item">
-                                <h4>3</h4>
-                                <p>Ancient Dynasties</p>
-                            </div>
-                            <div class="stat-item">
-                                <h4>1000s</h4>
-                                <p>Species Protected</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <h3>Visiting These Sites</h3>
-                    <p>Each of these UNESCO World Heritage Sites offers unique experiences. The temple complexes provide insights into ancient Tamil culture, architecture, and spirituality. The mountain railway offers breathtaking scenic journeys through tea plantations and forests. The Western Ghats provide opportunities for wildlife viewing and nature appreciation in pristine ecosystems.</p>
-                </div>
-            </div>
-        </section>
-        <section id="gallery-section" class="content-section">
-            <h2>Heritage Gallery</h2>
-            <div class="gallery-content">
-                <p class="gallery-intro">Explore the magnificent architecture, natural beauty, and cultural heritage of Tamil Nadu's UNESCO World Heritage Sites through this curated collection of images.</p>
-                
-                <div class="gallery-grid">
-                    <div class="gallery-item" data-site="chola">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/Thanjavur_periya_kovil.jpg/800px-Thanjavur_periya_kovil.jpg" alt="Brihadeeswara Temple Thanjavur">
-                        <div class="gallery-overlay">
-                            <h3>Brihadeeswara Temple</h3>
-                            <p>The magnificent 216-foot vimana at Thanjavur</p>
-                        </div>
-                    </div>
-                    
-                    <div class="gallery-item" data-site="mahabalipuram">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/bb/Descent_of_the_Ganges_Mahabalipuram.jpg/800px-Descent_of_the_Ganges_Mahabalipuram.jpg" alt="Descent of the Ganges Relief">
-                        <div class="gallery-overlay">
-                            <h3>Descent of the Ganges</h3>
-                            <p>World's largest bas-relief at Mahabalipuram</p>
-                        </div>
-                    </div>
-                    
-                    <div class="gallery-item" data-site="mahabalipuram">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/Pancha_Rathas_Mahabalipuram.jpg/800px-Pancha_Rathas_Mahabalipuram.jpg" alt="Pancha Rathas">
-                        <div class="gallery-overlay">
-                            <h3>Pancha Rathas</h3>
-                            <p>Five monolithic temple chariots</p>
-                        </div>
-                    </div>
-                    
-                    <div class="gallery-item" data-site="railway">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/Nilgiri_Mountain_Railway_Steam_Engine.jpg/800px-Nilgiri_Mountain_Railway_Steam_Engine.jpg" alt="Nilgiri Mountain Railway">
-                        <div class="gallery-overlay">
-                            <h3>Nilgiri Mountain Railway</h3>
-                            <p>Historic hill railway through the Nilgiris</p>
-                        </div>
-                    </div>
-                    
-                    <div class="gallery-item" data-site="western-ghats">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Western_Ghats_landscape.jpg/800px-Western_Ghats_landscape.jpg" alt="Western Ghats Landscape">
-                        <div class="gallery-overlay">
-                            <h3>Western Ghats</h3>
-                            <p>Biodiversity hotspot and ancient mountains</p>
-                        </div>
-                    </div>
-                    
-                    <div class="gallery-item" data-site="chola">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Chola_bronze_sculptures.jpg/800px-Chola_bronze_sculptures.jpg" alt="Chola Bronze Sculptures">
-                        <div class="gallery-overlay">
-                            <h3>Chola Bronzes</h3>
-                            <p>Masterpieces of metal casting art</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="gallery-filters">
-                    <h3>Filter by Site Type</h3>
-                    <button class="filter-btn active" data-filter="all">All Sites</button>
-                    <button class="filter-btn" data-filter="chola">Chola Temples</button>
-                    <button class="filter-btn" data-filter="mahabalipuram">Mahabalipuram</button>
-                    <button class="filter-btn" data-filter="railway">Railway</button>
-                    <button class="filter-btn" data-filter="western-ghats">Western Ghats</button>
-                </div>
-            </div>
-        </section>
-    </main>
-    </main>
+    </div>
+
     <footer>
-        <p>A Curated Digital Experience. Data sourced from UNESCO.</p>
+        <div class="container">
+            <p>A Curated Digital Experience. Data sourced from UNESCO.</p>
+        </div>
     </footer>
-    <script src="httpshttps://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="script.js"></script>
 </body>
 </html>
