@@ -130,11 +130,6 @@ document.addEventListener('DOMContentLoaded', () => {
             // Close mobile nav if open
             if (state.isNavOpen) toggleMobileNav();
 
-            // Handle section visibility (mostly for single-page feel if sections were hidden)
-            // But with the new design, we might just scroll to them.
-            // However, the original logic hid sections. Let's keep the scroll-to logic primarily
-            // but also ensure the section is "active" for any specific logic.
-
             const targetSection = document.getElementById(targetId);
             if(targetSection) {
                  // For map section specifically, we might need to trigger map resize
@@ -155,7 +150,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function displaySites(sites) {
         elements.sitesContainer.innerHTML = '';
         if (sites.length === 0) {
-            elements.sitesContainer.innerHTML = '<p class="no-results">No matching sites found.</p>';
+            elements.sitesContainer.innerHTML = '<p class="no-results" style="text-align: center; color: var(--color-text-tertiary); grid-column: 1 / -1;">No matching sites found.</p>';
             return;
         }
 
@@ -177,6 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // Trigger animations for new elements
+        // This time we use the IntersectionObserver correctly to add the 'visible' class
         setupScrollAnimations();
     }
 
@@ -206,12 +202,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let timelineHTML = '';
         timelineData.forEach((item, index) => {
-            // Alternating sides logic is handled by CSS nth-child
             timelineHTML += `
                 <div class="timeline-item">
                     <div class="timeline-dot"></div>
                     <div class="timeline-content">
-                        <span class="timeline-year" style="color: var(--color-accent-primary); font-weight: 600;">${item.year}</span>
+                        <span class="timeline-year">${item.year}</span>
                         <h4>${item.event}</h4>
                         <p>${item.description}</p>
                     </div>
@@ -299,7 +294,6 @@ document.addEventListener('DOMContentLoaded', () => {
             elements.galleryItems.forEach(item => {
                 if (filterValue === 'all' || item.dataset.site === filterValue) {
                     item.style.display = 'block';
-                    // Trigger reflow for animation if we add it later
                 } else {
                     item.style.display = 'none';
                 }
@@ -318,7 +312,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const initialZoom = 7;
 
         state.mapInstance = L.map('map-container', {
-            scrollWheelZoom: false // Better UX for scrolling pages
+            scrollWheelZoom: false
         }).setView(tamilNaduCenter, initialZoom);
 
         // Layers
@@ -341,7 +335,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Icons
+        // Icons - Custom colors to match theme
         const createIcon = (iconClass, color) => L.divIcon({
             html: `<i class="${iconClass}" style="color: ${color}; font-size: 24px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));"></i>`,
             className: 'map-marker-custom',
@@ -351,7 +345,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         const icons = {
-            temple: createIcon('fa-solid fa-gopuram', '#C70039'),
+            temple: createIcon('fa-solid fa-gopuram', '#a97142'), // Bronze
             railway: createIcon('fa-solid fa-train', '#005A4B'),
             nature: createIcon('fa-solid fa-tree', '#2E8B57')
         };
@@ -366,8 +360,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     const popupContent = `
                         <div class="map-popup-content" style="text-align:center;">
-                            <h3 style="margin: 0 0 8px 0; font-size: 1rem;">${site.name}</h3>
-                            <button class="learn-more" data-id="${site.id}" style="font-size: 0.8rem; border: none; background: none; cursor: pointer; padding: 0; color: var(--color-accent-primary);">View Details</button>
+                            <h3 style="margin: 0 0 8px 0; font-size: 1rem; font-family: 'Playfair Display', serif;">${site.name}</h3>
+                            <button class="learn-more" data-id="${site.id}" style="font-size: 0.8rem; border: none; background: none; cursor: pointer; padding: 0; color: #a97142; margin-top: 4px;">View Details</button>
                         </div>
                     `;
 
@@ -395,8 +389,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function parseCoordinates(coordString) {
-        // Simple parser for N10 46 59 E79 7 57 format
-        // This regex is specific to the data format provided
         const regex = /N(\d+)\s(\d+)\s(\d+(\.\d+)?)\sE(\d+)\s(\d+)\s(\d+(\.\d+)?)/;
         const match = coordString.match(regex);
 
@@ -413,34 +405,43 @@ document.addEventListener('DOMContentLoaded', () => {
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0)';
+                    entry.target.classList.add('visible');
                     observer.unobserve(entry.target);
                 }
             });
         }, { threshold: 0.1 });
 
-        // Apply to cards that might not have the class yet (if re-rendered)
-        // Note: CSS handles the initial state (.site-card has opacity 0 logic if added properly)
-        // We need to ensure inline styles don't conflict or we rely on class additions.
-        // Let's manually fade them in via JS for consistent control if CSS isn't enough.
+        // Observe Sections
+        document.querySelectorAll('.content-section').forEach(section => {
+            observer.observe(section);
+        });
 
-        const cards = document.querySelectorAll('.site-card');
-        cards.forEach(card => {
-             // Check if already visible
-             if(getComputedStyle(card).opacity !== '1') {
-                 // Initial state set in CSS:
-                 // .site-card { opacity: 0; transform: translateY(20px); }
-                 observer.observe(card);
-             }
+        // Observe Cards specifically (for dynamic loading)
+        document.querySelectorAll('.site-card').forEach(card => {
+             // If we want individual card entry animations, we can add a class here
+             // But for now, they are part of the container.
+             // Let's make them appear.
         });
     }
+
+    // Also reveal any content sections that might be already in view
+    setTimeout(() => {
+        document.querySelectorAll('.content-section').forEach(section => {
+            const rect = section.getBoundingClientRect();
+            if(rect.top < window.innerHeight) {
+                section.classList.add('visible');
+            }
+        });
+    }, 100);
 
     // Initialize
     displaySites(heritageSitesData);
     displayFeaturedSite();
     renderTimeline();
     setupMapObserver();
+
+    // Initial animation trigger for sections already in view
+    setupScrollAnimations();
 
     // Map is initialized when section is scrolled to or if user navigates there directly
     if(window.location.hash === '#map-view-section') {
