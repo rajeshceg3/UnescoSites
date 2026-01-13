@@ -159,10 +159,13 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        sites.forEach(site => {
+        sites.forEach((site, index) => {
             const siteCard = document.createElement('article');
-            siteCard.className = 'site-card';
+            siteCard.className = 'site-card animate-on-scroll';
             siteCard.dataset.siteId = site.id;
+            // Stagger delay
+            siteCard.style.transitionDelay = `${index * 100}ms`;
+
             siteCard.innerHTML = `
                 <div class="card-img-container">
                     <img src="${site.image_url}" alt="${site.name}" loading="lazy">
@@ -177,7 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // Trigger animations for new elements
-        setupScrollAnimations();
+        setTimeout(setupScrollAnimations, 50); // Small delay to ensure DOM is ready
     }
 
     function displayFeaturedSite() {
@@ -208,7 +211,7 @@ document.addEventListener('DOMContentLoaded', () => {
         timelineData.forEach((item, index) => {
             // Alternating sides logic is handled by CSS nth-child
             timelineHTML += `
-                <div class="timeline-item">
+                <div class="timeline-item animate-on-scroll" style="transition-delay: ${index * 150}ms">
                     <div class="timeline-dot"></div>
                     <div class="timeline-content">
                         <span class="timeline-year" style="color: var(--color-accent-primary); font-weight: 600;">${item.year}</span>
@@ -413,27 +416,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0)';
+                    entry.target.classList.add('is-visible');
                     observer.unobserve(entry.target);
                 }
             });
-        }, { threshold: 0.1 });
+        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
 
-        // Apply to cards that might not have the class yet (if re-rendered)
-        // Note: CSS handles the initial state (.site-card has opacity 0 logic if added properly)
-        // We need to ensure inline styles don't conflict or we rely on class additions.
-        // Let's manually fade them in via JS for consistent control if CSS isn't enough.
-
-        const cards = document.querySelectorAll('.site-card');
-        cards.forEach(card => {
-             // Check if already visible
-             if(getComputedStyle(card).opacity !== '1') {
-                 // Initial state set in CSS:
-                 // .site-card { opacity: 0; transform: translateY(20px); }
-                 observer.observe(card);
-             }
-        });
+        const animatedElements = document.querySelectorAll('.animate-on-scroll:not(.is-visible)');
+        animatedElements.forEach(el => observer.observe(el));
     }
 
     // Initialize
