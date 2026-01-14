@@ -81,12 +81,13 @@ document.addEventListener('DOMContentLoaded', () => {
         navToggle: document.querySelector('.nav-toggle'),
         mainNav: document.getElementById('main-nav'),
         header: document.querySelector('header'),
-        contentSections: document.querySelectorAll('.content-section'),
         featuredSiteContainer: document.getElementById('featured-site'),
         featuredSiteContent: document.getElementById('featured-site-content'),
         timelineContainer: document.getElementById('interactive-timeline'),
         galleryFilters: document.querySelectorAll('.filter-btn'),
-        galleryItems: document.querySelectorAll('.gallery-item')
+        galleryItems: document.querySelectorAll('.gallery-item'),
+        heroBackground: document.querySelector('.hero-background'),
+        mouseScroll: document.querySelector('.scroll-indicator')
     };
 
     let state = {
@@ -95,50 +96,66 @@ document.addEventListener('DOMContentLoaded', () => {
         isNavOpen: false
     };
 
-    // --- Navigation & Scroll Interaction ---
+    // --- Navigation & Header Effects ---
+
+    // Parallax Effect for Hero
+    window.addEventListener('scroll', () => {
+        const scrollY = window.scrollY;
+
+        // Sticky Header
+        if (scrollY > 20) {
+            elements.header.classList.add('scrolled');
+            // Hide scroll indicator on scroll
+            if (elements.mouseScroll) elements.mouseScroll.style.opacity = '0';
+        } else {
+            elements.header.classList.remove('scrolled');
+            if (elements.mouseScroll) elements.mouseScroll.style.opacity = '0.8';
+        }
+
+        // Parallax
+        if (elements.heroBackground && scrollY < window.innerHeight) {
+            elements.heroBackground.style.transform = `scale(1.1) translateY(${scrollY * 0.4}px)`;
+        }
+    });
+
+    // Mobile Nav Toggle
     function toggleMobileNav() {
         state.isNavOpen = !state.isNavOpen;
         elements.mainNav.classList.toggle('open', state.isNavOpen);
         const icon = elements.navToggle.querySelector('i');
-        icon.className = state.isNavOpen ? 'fas fa-times' : 'fas fa-bars';
+        if(icon) icon.className = state.isNavOpen ? 'fas fa-times' : 'fas fa-bars';
+
+        // Prevent body scroll when nav is open
+        document.body.style.overflow = state.isNavOpen ? 'hidden' : '';
     }
 
-    elements.navToggle.addEventListener('click', toggleMobileNav);
+    if (elements.navToggle) {
+        elements.navToggle.addEventListener('click', toggleMobileNav);
+    }
 
-    // Close nav when clicking outside
+    // Close nav when clicking outside or on a link
     document.addEventListener('click', (e) => {
         if (state.isNavOpen && !elements.mainNav.contains(e.target) && !elements.navToggle.contains(e.target)) {
             toggleMobileNav();
         }
     });
 
-    // Sticky Header Effect
-    window.addEventListener('scroll', () => {
-        if (window.scrollY > 50) {
-            elements.header.classList.add('scrolled');
-        } else {
-            elements.header.classList.remove('scrolled');
-        }
-    });
-
-    // Smooth Scrolling & Section Activation
     elements.navLinks.forEach(link => {
         link.addEventListener('click', (e) => {
             e.preventDefault();
-            const targetId = link.dataset.section;
+            const targetId = link.getAttribute('href').substring(1); // Use href hash instead of dataset for reliability
 
-            // Close mobile nav if open
             if (state.isNavOpen) toggleMobileNav();
 
-            // Handle section visibility (mostly for single-page feel if sections were hidden)
-            // But with the new design, we might just scroll to them.
-            // However, the original logic hid sections. Let's keep the scroll-to logic primarily
-            // but also ensure the section is "active" for any specific logic.
+            // Simple update of active state
+            elements.navLinks.forEach(l => l.classList.remove('active'));
+            link.classList.add('active');
 
-            const targetSection = document.getElementById(targetId);
+            const targetSection = document.getElementById(targetId + '-section') || document.getElementById(targetId);
+
             if(targetSection) {
-                 // For map section specifically, we might need to trigger map resize
-                if (targetId === 'map-view-section') {
+                 // Trigger map resize if needed
+                if (targetId === 'map' || targetId === 'map-view-section') {
                    setTimeout(() => {
                        if(state.mapInstance) state.mapInstance.invalidateSize();
                        else initializeMap();
@@ -155,7 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function displaySites(sites) {
         elements.sitesContainer.innerHTML = '';
         if (sites.length === 0) {
-            elements.sitesContainer.innerHTML = '<p class="no-results">No matching sites found.</p>';
+            elements.sitesContainer.innerHTML = '<p class="no-results" style="grid-column: 1/-1; text-align: center; color: var(--color-text-secondary);">No matching sites found.</p>';
             return;
         }
 
@@ -163,8 +180,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const siteCard = document.createElement('article');
             siteCard.className = 'site-card animate-on-scroll';
             siteCard.dataset.siteId = site.id;
-            // Stagger delay
-            siteCard.style.transitionDelay = `${index * 100}ms`;
+            // Stagger delay for entrance
+            siteCard.style.transitionDelay = `${index * 50}ms`;
 
             siteCard.innerHTML = `
                 <div class="card-img-container">
@@ -173,25 +190,31 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="card-content">
                     <h2>${site.name}</h2>
                     <p class="short-desc">${site.short_description}</p>
-                    <a href="#" class="learn-more" data-id="${site.id}">Explore Details</a>
+                    <a href="#" class="learn-more" data-id="${site.id}">
+                        Explore Details <i class="fas fa-arrow-right" style="font-size: 0.8em;"></i>
+                    </a>
                 </div>
             `;
             elements.sitesContainer.appendChild(siteCard);
         });
 
-        // Trigger animations for new elements
-        setTimeout(setupScrollAnimations, 50); // Small delay to ensure DOM is ready
+        // Trigger animations
+        setTimeout(setupScrollAnimations, 100);
     }
 
     function displayFeaturedSite() {
+        if (!elements.featuredSiteContent) return;
+
         const featuredSite = heritageSitesData[Math.floor(Math.random() * heritageSitesData.length)];
         elements.featuredSiteContent.innerHTML = `
-            <div style="display: flex; gap: 24px; align-items: center; flex-wrap: wrap;">
-                <img src="${featuredSite.image_url}" alt="${featuredSite.name}" style="max-width: 150px; border-radius: 8px;">
-                <div>
-                    <h3>${featuredSite.name}</h3>
-                    <p>${featuredSite.short_description}</p>
-                    <a href="#" class="learn-more" data-id="${featuredSite.id}">Discover More</a>
+            <div style="display: flex; gap: var(--space-lg); align-items: flex-start; flex-wrap: wrap;">
+                <div style="flex: 0 0 120px; height: 120px; border-radius: var(--radius-md); overflow: hidden; box-shadow: var(--shadow-sm);">
+                    <img src="${featuredSite.image_url}" alt="${featuredSite.name}" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                <div style="flex: 1; min-width: 250px;">
+                    <h3 style="margin-top: 0;">${featuredSite.name}</h3>
+                    <p style="margin-bottom: var(--space-sm); font-size: 0.95rem;">${featuredSite.short_description}</p>
+                    <a href="#" class="learn-more" data-id="${featuredSite.id}">Discover More <i class="fas fa-arrow-right" style="font-size: 0.8em;"></i></a>
                 </div>
             </div>
         `;
@@ -199,24 +222,26 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderTimeline() {
+        if (!elements.timelineContainer) return;
+
         const timelineData = [
-            { year: 'c. 600-900 CE', event: 'Pallava Dynasty', description: 'Pioneered rock-cut architecture at Mahabalipuram.' },
-            { year: 'c. 850-1279 CE', event: 'Chola Dynasty', description: 'Perfected Dravidian temple architecture, building the Great Living Chola Temples.' },
-            { year: '1908', event: 'Nilgiri Mountain Railway', description: 'Completed by the British, a marvel of engineering.' },
-            { year: '1984', event: 'UNESCO Recognition', description: 'Mahabalipuram monuments recognized as a World Heritage Site.' },
-            { year: '1987, 2004', event: 'UNESCO Recognition', description: 'Great Living Chola Temples inscribed.' },
+            { year: 'c. 600-900 CE', event: 'Pallava Dynasty', description: 'Pioneered rock-cut architecture at Mahabalipuram, creating a legacy carved in stone.' },
+            { year: 'c. 850-1279 CE', event: 'Chola Dynasty', description: 'Perfected Dravidian temple architecture, building the Great Living Chola Temples with massive granite vimanas.' },
+            { year: '1908', event: 'Nilgiri Mountain Railway', description: 'Completed by the British, this engineering marvel scales the Blue Mountains using a unique rack and pinion system.' },
+            { year: '1984', event: 'UNESCO Inscription', description: 'The Group of Monuments at Mahabalipuram was inscribed as a UNESCO World Heritage Site.' },
+            { year: '1987', event: 'Great Living Chola Temples', description: 'Brihadeeswara Temple was inscribed, later extended to include Gangaikondacholapuram and Darasuram in 2004.' },
+            { year: '2012', event: 'Western Ghats', description: 'The Western Ghats were recognized as a UNESCO World Heritage Site for their immense biodiversity.' }
         ];
 
         let timelineHTML = '';
         timelineData.forEach((item, index) => {
-            // Alternating sides logic is handled by CSS nth-child
             timelineHTML += `
-                <div class="timeline-item animate-on-scroll" style="transition-delay: ${index * 150}ms">
+                <div class="timeline-item animate-on-scroll">
                     <div class="timeline-dot"></div>
                     <div class="timeline-content">
-                        <span class="timeline-year" style="color: var(--color-accent-primary); font-weight: 600;">${item.year}</span>
-                        <h4>${item.event}</h4>
-                        <p>${item.description}</p>
+                        <span class="timeline-year" style="color: var(--color-accent-primary); font-weight: 700; font-size: 0.9rem; letter-spacing: 0.05em;">${item.year}</span>
+                        <h4 style="margin: 4px 0 8px;">${item.event}</h4>
+                        <p style="margin-bottom: 0; font-size: 0.95rem;">${item.description}</p>
                     </div>
                 </div>
             `;
@@ -225,52 +250,54 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- Search Functionality ---
-    elements.searchInput.addEventListener('input', (e) => {
-        const searchTerm = e.target.value.toLowerCase();
+    if (elements.searchInput) {
+        elements.searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            elements.clearSearchButton.classList.toggle('hidden', searchTerm === '');
 
-        elements.clearSearchButton.classList.toggle('hidden', searchTerm === '');
+            const filteredSites = heritageSitesData.filter(site =>
+                site.name.toLowerCase().includes(searchTerm) ||
+                site.short_description.toLowerCase().includes(searchTerm)
+            );
+            displaySites(filteredSites);
+        });
 
-        const filteredSites = heritageSitesData.filter(site =>
-            site.name.toLowerCase().includes(searchTerm) ||
-            site.short_description.toLowerCase().includes(searchTerm)
-        );
-        displaySites(filteredSites);
-    });
-
-    elements.clearSearchButton.addEventListener('click', () => {
-        elements.searchInput.value = '';
-        elements.clearSearchButton.classList.add('hidden');
-        displaySites(heritageSitesData);
-    });
+        elements.clearSearchButton.addEventListener('click', () => {
+            elements.searchInput.value = '';
+            elements.clearSearchButton.classList.add('hidden');
+            displaySites(heritageSitesData);
+            elements.searchInput.focus();
+        });
+    }
 
     // --- Modal Logic ---
     function openModal(siteId) {
         const site = heritageSitesData.find(s => s.id === parseInt(siteId));
         if (!site) return;
 
-        // Set Header Image
         elements.modalHeaderContainer.innerHTML = `
             <img src="${site.image_url}" alt="${site.name}" class="modal-header-img">
         `;
 
-        // Set Body Content
         elements.modalBody.innerHTML = `
-            <h2>${site.name}</h2>
-            <div class="site-meta" style="display: flex; gap: 16px; margin-bottom: 24px; color: var(--color-text-secondary); font-size: 0.9rem;">
-                 <span><i class="fas fa-calendar-alt"></i> ${site.year_built || 'Unknown'}</span>
-                 <span><i class="fas fa-crown"></i> ${site.dynasty || 'Various'}</span>
-                 <span><i class="fas fa-map-marker-alt"></i> ${site.coordinates}</span>
+            <h2 style="margin-bottom: var(--space-sm);">${site.name}</h2>
+            <div class="site-meta" style="display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--color-border); color: var(--color-text-secondary); font-size: 0.9rem;">
+                 <span title="Year Built"><i class="fas fa-calendar-alt" style="margin-right: 6px; color: var(--color-accent-primary);"></i> ${site.year_built || 'Unknown'}</span>
+                 <span title="Dynasty/Era"><i class="fas fa-crown" style="margin-right: 6px; color: var(--color-accent-primary);"></i> ${site.dynasty || 'Various'}</span>
+                 <span title="Coordinates"><i class="fas fa-map-marker-alt" style="margin-right: 6px; color: var(--color-accent-primary);"></i> ${site.coordinates}</span>
             </div>
-            <p style="font-size: 1.1rem; line-height: 1.8;">${site.long_description}</p>
+            <div style="font-size: 1.05rem; line-height: 1.8; color: var(--color-text-secondary);">
+                ${site.long_description.split('. ').map(sentence => `<p>${sentence}.</p>`).join('')}
+            </div>
         `;
 
         elements.siteDetailModal.classList.remove('hidden');
-        document.body.style.overflow = 'hidden'; // Prevent background scrolling
+        document.body.style.overflow = 'hidden';
     }
 
     function closeModal() {
         elements.siteDetailModal.classList.add('hidden');
-        document.body.style.overflow = ''; // Restore scrolling
+        document.body.style.overflow = '';
         setTimeout(() => {
             elements.modalHeaderContainer.innerHTML = '';
             elements.modalBody.innerHTML = '';
@@ -278,37 +305,52 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     document.body.addEventListener('click', (event) => {
-        // Use closest to handle clicks on child elements of the button
         const learnMoreBtn = event.target.closest('.learn-more');
         const closeModalBtn = event.target.closest('[data-close-modal]');
+        const modalOverlay = event.target.closest('.modal-overlay');
 
         if (learnMoreBtn) {
             event.preventDefault();
             openModal(learnMoreBtn.dataset.id);
-        } else if (closeModalBtn) {
+        } else if (closeModalBtn || modalOverlay) {
+            closeModal();
+        }
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !elements.siteDetailModal.classList.contains('hidden')) {
             closeModal();
         }
     });
 
     // --- Gallery Filtering ---
-    elements.galleryFilters.forEach(btn => {
-        btn.addEventListener('click', () => {
-            // Update active state
-            elements.galleryFilters.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
+    if (elements.galleryFilters.length > 0) {
+        elements.galleryFilters.forEach(btn => {
+            btn.addEventListener('click', () => {
+                elements.galleryFilters.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
 
-            const filterValue = btn.dataset.filter;
+                const filterValue = btn.dataset.filter;
+                let count = 0;
 
-            elements.galleryItems.forEach(item => {
-                if (filterValue === 'all' || item.dataset.site === filterValue) {
-                    item.style.display = 'block';
-                    // Trigger reflow for animation if we add it later
-                } else {
-                    item.style.display = 'none';
-                }
+                elements.galleryItems.forEach(item => {
+                    if (filterValue === 'all' || item.dataset.site === filterValue) {
+                        item.style.display = 'block';
+                        // Simple animation for reflow
+                        item.style.opacity = '0';
+                        item.style.transform = 'translateY(10px)';
+                        setTimeout(() => {
+                            item.style.opacity = '1';
+                            item.style.transform = 'translateY(0)';
+                        }, 50 + (count * 50));
+                        count++;
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
             });
         });
-    });
+    }
 
     // --- Map Logic ---
     function initializeMap() {
@@ -317,45 +359,56 @@ document.addEventListener('DOMContentLoaded', () => {
         const mapContainer = document.getElementById('map-container');
         if (!mapContainer) return;
 
-        const tamilNaduCenter = [10.7905, 78.7047];
+        // Custom Map Style (CartoDB Voyager - very clean, Stripe-like)
+        const mapStyle = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+        const mapAttribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>';
+
+        const tamilNaduCenter = [10.8, 78.7];
         const initialZoom = 7;
 
         state.mapInstance = L.map('map-container', {
-            scrollWheelZoom: false // Better UX for scrolling pages
+            scrollWheelZoom: false,
+            zoomControl: false // We can add it elsewhere or customize it
         }).setView(tamilNaduCenter, initialZoom);
 
-        // Layers
-        const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; OpenStreetMap contributors'
+        L.control.zoom({
+            position: 'bottomright'
         }).addTo(state.mapInstance);
 
+        // Layers
+        const defaultLayer = L.tileLayer(mapStyle, { attribution: mapAttribution }).addTo(state.mapInstance);
         const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
             attribution: 'Tiles &copy; Esri'
         });
 
-        // Layer Switcher
-        document.getElementById('map-layer-switcher').addEventListener('change', (e) => {
-            if (e.target.value === 'satellite') {
-                state.mapInstance.addLayer(satelliteLayer);
-                state.mapInstance.removeLayer(osmLayer);
-            } else {
-                state.mapInstance.addLayer(osmLayer);
-                state.mapInstance.removeLayer(satelliteLayer);
-            }
-        });
+        // Layer Switcher logic
+        const layerSwitcher = document.getElementById('map-layer-switcher');
+        if (layerSwitcher) {
+            layerSwitcher.addEventListener('change', (e) => {
+                if (e.target.value === 'satellite') {
+                    state.mapInstance.addLayer(satelliteLayer);
+                    state.mapInstance.removeLayer(defaultLayer);
+                } else {
+                    state.mapInstance.addLayer(defaultLayer);
+                    state.mapInstance.removeLayer(satelliteLayer);
+                }
+            });
+        }
 
-        // Icons
+        // Custom Icons
         const createIcon = (iconClass, color) => L.divIcon({
-            html: `<i class="${iconClass}" style="color: ${color}; font-size: 24px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));"></i>`,
+            html: `<div style="background-color: white; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 6px rgba(0,0,0,0.2); border: 2px solid ${color};">
+                     <i class="${iconClass}" style="color: ${color}; font-size: 16px;"></i>
+                   </div>`,
             className: 'map-marker-custom',
-            iconSize: [30, 30],
-            iconAnchor: [15, 30],
-            popupAnchor: [0, -30]
+            iconSize: [32, 32],
+            iconAnchor: [16, 32], // Bottom center
+            popupAnchor: [0, -36]
         });
 
         const icons = {
-            temple: createIcon('fa-solid fa-gopuram', '#C70039'),
-            railway: createIcon('fa-solid fa-train', '#005A4B'),
+            temple: createIcon('fa-solid fa-gopuram', '#d97706'),
+            railway: createIcon('fa-solid fa-train', '#0a2540'),
             nature: createIcon('fa-solid fa-tree', '#2E8B57')
         };
 
@@ -368,9 +421,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     const marker = L.marker([lat, lon], { icon }).addTo(state.mapInstance);
 
                     const popupContent = `
-                        <div class="map-popup-content" style="text-align:center;">
-                            <h3 style="margin: 0 0 8px 0; font-size: 1rem;">${site.name}</h3>
-                            <button class="learn-more" data-id="${site.id}" style="font-size: 0.8rem; border: none; background: none; cursor: pointer; padding: 0; color: var(--color-accent-primary);">View Details</button>
+                        <div class="map-popup-content" style="text-align:center; min-width: 150px;">
+                            <h3 style="margin: 0 0 8px 0; font-size: 1rem; font-family: var(--font-serif);">${site.name}</h3>
+                            <button class="learn-more" data-id="${site.id}" style="font-size: 0.8rem; border: none; background: none; cursor: pointer; padding: 0; color: var(--color-accent-primary); font-weight: 600;">
+                                View Details
+                            </button>
                         </div>
                     `;
 
@@ -398,8 +453,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function parseCoordinates(coordString) {
-        // Simple parser for N10 46 59 E79 7 57 format
-        // This regex is specific to the data format provided
         const regex = /N(\d+)\s(\d+)\s(\d+(\.\d+)?)\sE(\d+)\s(\d+)\s(\d+(\.\d+)?)/;
         const match = coordString.match(regex);
 
@@ -411,7 +464,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return { lat: null, lon: null };
     }
 
-    // --- Animations ---
+    // --- Universal Animations ---
     function setupScrollAnimations() {
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
@@ -426,14 +479,14 @@ document.addEventListener('DOMContentLoaded', () => {
         animatedElements.forEach(el => observer.observe(el));
     }
 
-    // Initialize
+    // Initialization
     displaySites(heritageSitesData);
     displayFeaturedSite();
     renderTimeline();
     setupMapObserver();
 
-    // Map is initialized when section is scrolled to or if user navigates there directly
-    if(window.location.hash === '#map-view-section') {
+    // Check deep link
+    if(window.location.hash === '#map' || window.location.hash === '#map-view-section') {
         initializeMap();
     }
 });
