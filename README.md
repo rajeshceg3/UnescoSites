@@ -1,3 +1,20 @@
+# Leaflet story-map enhancement
+
+The current front door is a seven-stop guided heritage story with independent exploration. Open `index.html` through any static HTTP server, for example `python3 -m http.server 8000`, and visit localhost:8000. It uses local Leaflet 1.9.4 and bundled Natural Earth overview geography; no remote raster tiles or API key is required.
+
+Private review preview: https://files.instinct.com/qhewr3ocehml-tamil-nadu-heritage-map-tour . This is a review preview, not a production deployment.
+
+- Next, previous and restart guide the story. Nearby stops group at overview zoom and separate when activated. Every stop is also available in the keyboard-accessible chooser.
+- Pan/zoom explores independently while keeping the current story. Return to story restores its framing. Show all stops returns the geographic context.
+- Seven stops cover four UNESCO properties. Pins are UNESCO references, not entrances, stations, routes or legal boundaries. The selected forest stops are not the entire Western Ghats property.
+- Six explanatory diagrams and one credited temple photo support the new story. All six earlier narratives and twelve original schematic images remain accessible in supporting disclosures; source files are also preserved byte-for-byte.
+- No account, automatic location, booking, tracking, storage or autoplay is introduced.
+
+Sources, licenses, content preservation and readiness: `docs/story-map/`. Browser checks: `tests/`. Visual and test evidence: `evidence/story-map/`.
+
+## Earlier project README
+The text below documents the original project, not an assurance that every previously advertised feature existed or remains a primary navigation pattern.
+
 # UNESCO Heritage Sites in Tamil Nadu - Interactive Guide
 
 An interactive web application showcasing the UNESCO World Heritage sites in Tamil Nadu, India. This guide allows users to explore these significant cultural and historical landmarks through an easy-to-use interface.
