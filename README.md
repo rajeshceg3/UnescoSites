@@ -8,6 +8,10 @@ Photography sources and licenses: `data/photography.js`, `docs/design-20261108/p
 
 Run `node scripts/build-static.mjs`; publish only `dist`. QA: `PLAYWRIGHT_MODULE=/path/to/playwright/index.mjs node tests/warm-design.mjs`; set `DIRECT_URL` for the hosted build. Earlier suites below describe the previous layout; the new suite owns this design's behavior, content, touch-target and motion checks. See `docs/design-20261108/README.md`.
 
+## Deployment checks
+
+Cloudflare Pages builds the `main` branch with `node scripts/build-static.mjs` and publishes `dist`. After reconnecting the GitHub integration, a fresh source event is required: retrying an older deployment keeps that older commit. Confirm the deployment commit, compare the runtime manifest, and run the hosted design suite before calling a release live.
+
 # Leaflet story-map enhancement
 
 The current front door is a seven-stop guided heritage story with independent exploration. Open `index.html` through any static HTTP server, for example `python3 -m http.server 8000`, and visit localhost:8000. It uses local Leaflet 1.9.4 and bundled Natural Earth overview geography; no remote raster tiles or API key is required.
