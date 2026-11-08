@@ -1,0 +1,44 @@
+{
+  "maha-detail": {
+    "page": "https://commons.wikimedia.org/wiki/File:Mamallapuram,_The_Shore_Temple_3,_India.jpg",
+    "download": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/24/Mamallapuram%2C_The_Shore_Temple_3%2C_India.jpg/960px-Mamallapuram%2C_The_Shore_Temple_3%2C_India.jpg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail&_=20220904132555",
+    "width": 960,
+    "height": 640,
+    "sha256": "46e9b09287246dc3e8e9f8e02115626faa3b3a0d12aa51073cf665ea9aac7c14"
+  },
+  "ganga": {
+    "download": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/59/Gangaikonda_CholaPuram.JPG/960px-Gangaikonda_CholaPuram.JPG?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail&_=20230811114317",
+    "width": 960,
+    "height": 720,
+    "page": "https://commons.wikimedia.org/wiki/File:Gangaikonda_CholaPuram.JPG",
+    "sha256": "013a3734561d56d60efbec22bc14377bacafcbff3de075bb0e54fca69cc84c5a"
+  },
+  "dara": {
+    "download": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0c/Darasuram%2C_Airavatesvara_Temple%2C_Gopuram%2C_India.jpg/960px-Darasuram%2C_Airavatesvara_Temple%2C_Gopuram%2C_India.jpg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail&_=20220904191723",
+    "width": 960,
+    "height": 640,
+    "page": "https://commons.wikimedia.org/wiki/File:Darasuram,_Airavatesvara_Temple,_Gopuram,_India.jpg",
+    "sha256": "981d398160af817baf587788863fe64fa440b8f40ef2150221cd74b6116f71c8"
+  },
+  "rail": {
+    "download": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8a/The_Nilgiri_Mountain_Railway.jpg/960px-The_Nilgiri_Mountain_Railway.jpg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail&_=20080630181004",
+    "width": 960,
+    "height": 720,
+    "page": "https://commons.wikimedia.org/wiki/File:The_Nilgiri_Mountain_Railway.jpg",
+    "sha256": "4dc1f12c5521435560b7cdbf5a582e6785b0b1f831dc8002bf8d0307ebf5a9ef"
+  },
+  "mukur": {
+    "download": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/59/A_scenic_view_of_Mukurthy_NP%2C_21st_March_2019%2C_AJT_Johnsingh._DSCN3222.jpg/960px-A_scenic_view_of_Mukurthy_NP%2C_21st_March_2019%2C_AJT_Johnsingh._DSCN3222.jpg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail&_=20220727120150",
+    "width": 960,
+    "height": 720,
+    "page": "https://commons.wikimedia.org/wiki/File:A_scenic_view_of_Mukurthy_NP,_21st_March_2019,_AJT_Johnsingh._DSCN3222.jpg",
+    "sha256": "2daa30ac07523ac6bc9b01548d88846e4d4b59a55e131e885ee00887c32bf45a"
+  },
+  "kalakad": {
+    "page": "https://commons.wikimedia.org/wiki/File:A_view_from_Kottangathatty,_KMTR._AJT_Johnsingh.jpg",
+    "download": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fb/A_view_from_Kottangathatty%2C_KMTR._AJT_Johnsingh.jpg/960px-A_view_from_Kottangathatty%2C_KMTR._AJT_Johnsingh.jpg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail&_=20220201190953",
+    "width": 960,
+    "height": 632,
+    "sha256": "e08b385cd76fd3af420e3237c733362e5f767f48278efbc8d227d7992f1b080a"
+  }
+}
