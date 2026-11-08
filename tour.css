@@ -7,3 +7,6 @@
 .cluster-pin span{width:52px;font-size:13px}.stop-art{min-height:160px;object-fit:contain;background:#edf4f0}@media(max-width:740px){.stop-art:not(.photo){height:170px;aspect-ratio:auto}}
 
 #heritage-map{height:420px;min-height:340px}@media(max-width:740px){#heritage-map{height:260px;min-height:260px}}
+
+/* One primary story action; sources stay on demand without hiding required credits. */
+button[data-action=next]{background:#00695e;border-color:#00695e;color:#fff;font-weight:700;box-shadow:0 2px 0 #004c44}button[data-action=next]:hover:not(:disabled){background:#00554c}button[data-action=next]:disabled{background:#dce3e0;color:#53665f;border-color:#bdcbc5;box-shadow:none;opacity:1}.reference-panel summary{font-weight:500}.reference-panel h3{margin-top:12px}.reference-panel p{max-width:65ch}
