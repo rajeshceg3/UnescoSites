@@ -1,0 +1,17 @@
+[
+  {
+    "file": "index.html",
+    "unchangedArchive": true,
+    "sha256": "72e39cf14b518676a86685769e8084145f316f357c37a12db9850ee58c9c8512"
+  },
+  {
+    "file": "script.js",
+    "unchangedArchive": true,
+    "sha256": "6cf613a9fd08c8485827a8d35190021363ffbfb323e91131b1a2cc0699e0b79b"
+  },
+  {
+    "file": "style.css",
+    "unchangedArchive": true,
+    "sha256": "1417cd4485913fdfe83c7704a80199e8ec49f0d84652f35bff734623316d183a"
+  }
+]
