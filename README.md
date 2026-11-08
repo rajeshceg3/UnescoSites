@@ -1,13 +1,23 @@
+# Warm heritage journey
+
+Current public experience: https://unescosites.pages.dev/
+
+November 8 design transformation: seven photographic chapters, warm sandstone and terracotta, quiet supporting exploration, 44px controls and reduced-motion-aware chapter transitions. The map, seven selected stops/four properties, original six narratives/twelve illustrations and truthful reference-point limitations remain. No storage, location access, booking, tracking or account introduced.
+
+Photography sources and licenses: `data/photography.js`, `docs/design-20261108/photo-downloads.json` and retained source extracts. New WebP copies are resized; rounded display corners are disclosed. The applicable original photograph licenses continue to apply to these copies, separate from repository code licensing. No generated imagery is used. Original diagrams are explicitly conceptual.
+
+Run `node scripts/build-static.mjs`; publish only `dist`. QA: `PLAYWRIGHT_MODULE=/path/to/playwright/index.mjs node tests/warm-design.mjs`; set `DIRECT_URL` for the hosted build. Earlier suites below describe the previous layout; the new suite owns this design's behavior, content, touch-target and motion checks. See `docs/design-20261108/README.md`.
+
 # Leaflet story-map enhancement
 
 The current front door is a seven-stop guided heritage story with independent exploration. Open `index.html` through any static HTTP server, for example `python3 -m http.server 8000`, and visit localhost:8000. It uses local Leaflet 1.9.4 and bundled Natural Earth overview geography; no remote raster tiles or API key is required.
 
-Private review preview: https://files.instinct.com/qhewr3ocehml-tamil-nadu-heritage-map-tour . This is a review preview, not a production deployment.
+Earlier private review snapshot (not the current production design): https://files.instinct.com/qhewr3ocehml-tamil-nadu-heritage-map-tour . This is a review preview, not a production deployment.
 
 - Next, previous and restart guide the story. Nearby stops group at overview zoom and separate when activated. Every stop is also available in the keyboard-accessible chooser.
 - Pan/zoom explores independently while keeping the current story. Return to story restores its framing. Show all stops returns the geographic context.
 - Seven stops cover four UNESCO properties. Pins are UNESCO references, not entrances, stations, routes or legal boundaries. The selected forest stops are not the entire Western Ghats property.
-- Six explanatory diagrams and one credited temple photo support the new story. All six earlier narratives and twelve original schematic images remain accessible in supporting disclosures; source files are also preserved byte-for-byte.
+- Seven rights-checked site photographs lead the journey; six explanatory diagrams remain under Look closer. All six earlier narratives and twelve original schematic images remain accessible in supporting disclosures; source files are also preserved byte-for-byte.
 - No account, automatic location, booking, tracking, storage or autoplay is introduced.
 
 Sources, licenses, content preservation and readiness: `docs/story-map/`. Browser checks: `tests/`. Visual and test evidence: `evidence/story-map/`.
