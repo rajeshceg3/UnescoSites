@@ -1,0 +1,30 @@
+START 320
+READY 320
+START 390
+READY 390
+START 844
+READY 844
+START 1280
+READY 1280
+[
+  {
+    width: 320,
+    passed: true,
+    checks: '7stops/mapframing/nextend/previous/restart/overview/resume/keyboardcluster/keyboardpan/zoomheld/8timeline/6legacyrecords/12illustrations/overflow/console'
+  },
+  {
+    width: 390,
+    passed: true,
+    checks: '7stops/mapframing/nextend/previous/restart/overview/resume/keyboardcluster/keyboardpan/zoomheld/8timeline/6legacyrecords/12illustrations/overflow/console'
+  },
+  {
+    width: 844,
+    passed: true,
+    checks: '7stops/mapframing/nextend/previous/restart/overview/resume/keyboardcluster/keyboardpan/zoomheld/8timeline/6legacyrecords/12illustrations/overflow/console'
+  },
+  {
+    width: 1280,
+    passed: true,
+    checks: '7stops/mapframing/nextend/previous/restart/overview/resume/keyboardcluster/keyboardpan/zoomheld/8timeline/6legacyrecords/12illustrations/overflow/console'
+  }
+]
