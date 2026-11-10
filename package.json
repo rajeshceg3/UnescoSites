@@ -1,0 +1,28 @@
+{
+  "name": "unescosites",
+  "version": "1.0.0",
+  "description": "Warm heritage journey - UNESCO sites map story",
+  "main": "script.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rajeshceg3/UnescoSites.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rajeshceg3/UnescoSites/issues"
+  },
+  "homepage": "https://github.com/rajeshceg3/UnescoSites#readme",
+  "devDependencies": {
+    "playwright": "^1.58.2"
+  },
+  "private": true
+}
