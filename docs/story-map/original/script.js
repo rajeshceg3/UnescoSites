@@ -310,9 +310,11 @@ document.addEventListener('DOMContentLoaded', () => {
             scrollWheelZoom: false
         }).setView([10.8, 78.7], 7);
 
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-        }).addTo(state.mapInstance);
+        // Warm paper basemap (worlds shared module): OpenFreeMap vector tiles,
+        // custom watercolor-wash style. Free public instance, no API key.
+        maplibregl.setWorkerUrl('vendor/maplibre/maplibre-gl-csp-worker.js');
+        L.maplibreGL({ style: window.WARM_MAP_STYLE }).addTo(state.mapInstance);
+        state.mapInstance.attributionControl.addAttribution('<a href="https://openfreemap.org" target="_blank">OpenFreeMap</a> <a href="https://www.openmaptiles.org/" target="_blank">&copy; OpenMapTiles</a> Data from <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>');
 
         // Custom Icons
         const createIcon = (color) => L.divIcon({
